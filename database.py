@@ -132,6 +132,19 @@ class Database:
             WHERE c.ctt_n LIKE ? OR c.ctt_n LIKE ? ORDER BY c.ctt_n
         ''', (f'%{numero}%', f'CTT-N-{padded}%')).fetchall()
 
+    def search_contratos_com_honorarios(self, query):
+        """Search contracts by client name OR contract number, returning contracts with their honorarios."""
+        q = f'%{query}%'
+        return self.conn.execute('''
+            SELECT h.id AS honorario_id, h.tipo, h.hipotese, h.valor,
+                   c.id AS contrato_id, c.ctt_n, cl.nome AS cliente_nome
+            FROM honorarios h
+            JOIN contratos c ON h.contrato_id = c.id
+            JOIN clientes cl ON c.cliente_id = cl.id
+            WHERE cl.nome LIKE ? OR c.ctt_n LIKE ?
+            ORDER BY c.ctt_n, h.tipo, h.ordem
+        ''', (q, q)).fetchall()
+
     def get_contratos_by_cliente(self, cliente_id):
         return self.conn.execute(
             'SELECT * FROM contratos WHERE cliente_id=? ORDER BY ctt_n', (cliente_id,)
