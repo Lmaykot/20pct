@@ -225,6 +225,8 @@ class GestaoPagamentosTab(ttk.Frame):
                 idx += 1
 
     def _on_tree_select(self, _event=None):
+        if self._loading:
+            return
         sel = self.tree.selection()
         if not sel:
             return
