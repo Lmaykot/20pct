@@ -186,8 +186,8 @@ class RelatorioGestaoTab(ttk.Frame):
         row += 1
 
         tk.Label(hcard, text=cont['cliente_nome'], bg=C_WHITE, fg=C_TEXT,
-                 font=FONT_H2, anchor='w', padx=16, pady=(12, 2)).grid(
-            row=0, column=0, columnspan=2, sticky='w')
+                 font=FONT_H2, anchor='w', padx=16).grid(
+            row=0, column=0, columnspan=2, sticky='w', pady=(12, 2))
 
         tk.Label(hcard, text=cont['ctt_n'], bg=C_WHITE, fg=C_ACCENT2,
                  font=('Segoe UI', 12, 'bold'), anchor='w', padx=16).grid(
