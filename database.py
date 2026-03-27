@@ -16,6 +16,7 @@ class Database:
             CREATE TABLE IF NOT EXISTS clientes (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 nome TEXT NOT NULL,
+                cpf_cnpj TEXT DEFAULT '',
                 telefone TEXT DEFAULT '',
                 email TEXT DEFAULT '',
                 endereco TEXT DEFAULT '',
