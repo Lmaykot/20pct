@@ -167,17 +167,18 @@ class CadastroClienteTab(ttk.Frame):
         if not nome:
             messagebox.showwarning('Atenção', 'O nome do cliente é obrigatório.')
             return
-        telefone = self.vars['telefone'].get().strip()
-        email    = self.vars['email'].get().strip()
-        endereco = self.vars['endereco'].get().strip()
+        cpf_cnpj  = self.vars['cpf_cnpj'].get().strip()
+        telefone  = self.vars['telefone'].get().strip()
+        email     = self.vars['email'].get().strip()
+        endereco  = self.vars['endereco'].get().strip()
         nome_repr = self.vars['nome_representante'].get().strip()
-        obs      = self.obs_text.get('1.0', 'end').strip()
+        obs       = self.obs_text.get('1.0', 'end').strip()
 
         if self.current_cliente_id:
-            self.db.update_cliente(self.current_cliente_id, nome, telefone, email, endereco, nome_repr, obs)
+            self.db.update_cliente(self.current_cliente_id, nome, cpf_cnpj, telefone, email, endereco, nome_repr, obs)
             self.status_lbl.config(text='Cliente atualizado com sucesso.', foreground=C_ACCENT)
         else:
-            self.db.insert_cliente(nome, telefone, email, endereco, nome_repr, obs)
+            self.db.insert_cliente(nome, cpf_cnpj, telefone, email, endereco, nome_repr, obs)
             self.status_lbl.config(text='Cliente cadastrado com sucesso.', foreground=C_ACCENT)
             self._clear_form()
 
