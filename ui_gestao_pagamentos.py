@@ -127,17 +127,21 @@ class GestaoPagamentosTab(ttk.Frame):
         table_outer.rowconfigure(1, weight=1)
         self.detail_panel.rowconfigure(3, weight=1)
 
-        # Header
+        # Header — column config must mirror parcelas_frame column config
         hdr_cols = ['Parcela', 'Valor', 'Vencimento', 'Nota Fiscal', 'Data Pagamento', '']
-        hdr_widths = [60, 120, 100, 100, 120, 30]
         hdr_bg = C_SIDEBAR
         hdr_row = tk.Frame(table_outer, bg=hdr_bg)
         hdr_row.grid(row=0, column=0, sticky='ew')
-        for col, (text, w) in enumerate(zip(hdr_cols, hdr_widths)):
+        hdr_row.columnconfigure(0, minsize=60)
+        hdr_row.columnconfigure(1, weight=1)
+        hdr_row.columnconfigure(2, weight=1)
+        hdr_row.columnconfigure(3, weight=1)
+        hdr_row.columnconfigure(4, weight=1)
+        hdr_row.columnconfigure(5, minsize=44)
+        for col, text in enumerate(hdr_cols):
             tk.Label(hdr_row, text=text, bg=hdr_bg, fg=C_WHITE,
-                     font=FONT_H3, anchor='w', padx=6, pady=6,
-                     width=w // 7).grid(row=0, column=col, sticky='ew')
-            hdr_row.columnconfigure(col, weight=1 if col in (1, 2, 3, 4) else 0)
+                     font=FONT_H3, anchor='w', padx=6).grid(
+                row=0, column=col, sticky='ew', pady=6)
 
         # Scrollable rows — use a simple Frame inside a Canvas
         self._parcelas_canvas = tk.Canvas(table_outer, bg=C_WHITE,
