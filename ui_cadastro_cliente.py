@@ -144,6 +144,7 @@ class CadastroClienteTab(ttk.Frame):
         self.current_cliente_id = cid
         self.form_title.config(text='Editar Cliente')
         self.vars['nome'].set(c['nome'] or '')
+        self.vars['cpf_cnpj'].set(c['cpf_cnpj'] or '')
         self.vars['telefone'].set(c['telefone'] or '')
         self.vars['email'].set(c['email'] or '')
         self.vars['endereco'].set(c['endereco'] or '')
