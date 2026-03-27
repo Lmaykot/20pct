@@ -205,7 +205,7 @@ class GestaoPagamentosTab(ttk.Frame):
             # Contract node
             contrato_iid = f'c_{data["contrato_id"]}'
             self.tree.insert('', 'end', iid=contrato_iid,
-                             text=f'  {ctt_n}  —  {data["cliente_nome"]}',
+                             text=f'{ctt_n}  —  {data["cliente_nome"]}',
                              values=('',),
                              tags=('contrato',), open=False)
 
@@ -213,14 +213,13 @@ class GestaoPagamentosTab(ttk.Frame):
                 tipo_lbl = TIPO_LABEL.get(h['tipo'], h['tipo'])
                 valor_str = f'R$ {h["valor"]}' if h['valor'] else ''
                 hipotese_str = h['hipotese'] or ''
-                detail = valor_str
-                if hipotese_str:
-                    detail = f'{valor_str}  •  {hipotese_str}' if valor_str else hipotese_str
+                parts = [p for p in (valor_str, hipotese_str) if p]
+                detail = '  |  '.join(parts)
 
                 tag = 'odd' if idx % 2 == 0 else 'even'
                 self.tree.insert(contrato_iid, 'end',
                                  iid=f'h_{h["honorario_id"]}',
-                                 text=f'    {tipo_lbl}',
+                                 text=tipo_lbl,
                                  values=(detail,),
                                  tags=('honorario', tag))
                 idx += 1
