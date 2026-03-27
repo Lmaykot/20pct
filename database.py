@@ -70,8 +70,8 @@ class Database:
 
     def insert_cliente(self, nome, cpf_cnpj, telefone, email, endereco, nome_repr, obs):
         cur = self.conn.execute(
-            'INSERT INTO clientes (nome,telefone,email,endereco,nome_representante,observacoes) VALUES (?,?,?,?,?,?)',
-            (nome, telefone, email, endereco, nome_repr, obs)
+            'INSERT INTO clientes (nome,cpf_cnpj,telefone,email,endereco,nome_representante,observacoes) VALUES (?,?,?,?,?,?,?)',
+            (nome, cpf_cnpj, telefone, email, endereco, nome_repr, obs)
         )
         self.conn.commit()
         return cur.lastrowid
