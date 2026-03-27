@@ -244,28 +244,32 @@ class GestaoPagamentosTab(ttk.Frame):
     # ── Load honorario ────────────────────────────────────────────────────────
 
     def load_honorario(self, honorario_id):
-        self.current_honorario_id = honorario_id
-        h = self.db.get_honorario(honorario_id)
-        if not h:
-            return
-        cont = self.db.get_contrato(h['contrato_id'])
-        if not cont:
-            return
-
-        self.lbl_cliente.config(text=cont['cliente_nome'])
-        self.lbl_ctt.config(text=cont['ctt_n'])
-        self.lbl_tipo.config(text=TIPO_LABEL.get(h['tipo'], h['tipo']))
-        self.lbl_hipotese.config(text=h['hipotese'] or '—')
-        self.lbl_valor.config(text=h['valor'] or '—')
-
-        # Select in tree if visible
+        self._loading = True
         try:
-            self.tree.selection_set(f'h_{honorario_id}')
-            self.tree.see(f'h_{honorario_id}')
-        except Exception:
-            pass
+            self.current_honorario_id = honorario_id
+            h = self.db.get_honorario(honorario_id)
+            if not h:
+                return
+            cont = self.db.get_contrato(h['contrato_id'])
+            if not cont:
+                return
 
-        self._load_parcelas(honorario_id)
+            self.lbl_cliente.config(text=cont['cliente_nome'])
+            self.lbl_ctt.config(text=cont['ctt_n'])
+            self.lbl_tipo.config(text=TIPO_LABEL.get(h['tipo'], h['tipo']))
+            self.lbl_hipotese.config(text=h['hipotese'] or '—')
+            self.lbl_valor.config(text=h['valor'] or '—')
+
+            # Select in tree if visible
+            try:
+                self.tree.selection_set(f'h_{honorario_id}')
+                self.tree.see(f'h_{honorario_id}')
+            except Exception:
+                pass
+
+            self._load_parcelas(honorario_id)
+        finally:
+            self._loading = False
 
     def _load_parcelas(self, honorario_id):
         # Clear existing rows
