@@ -22,7 +22,7 @@ No dependencies to install — pure Python stdlib (tkinter + sqlite3). The SQLit
 clientes → contratos → honorarios → parcelas
 ```
 
-- **clientes**: clients/companies
+- **clientes**: clients/companies (fields: nome, cpf_cnpj, telefone, email, endereco, nome_representante, observacoes)
 - **contratos**: legal contracts (each has a unique CTT-N number, belongs to a client)
 - **honorarios**: fee structures (4 types: inicial, condicionado, intermediário, êxito) attached to a contract
 - **parcelas**: payment installments for each honorario
