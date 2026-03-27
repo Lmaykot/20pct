@@ -19,6 +19,7 @@ class GestaoPagamentosTab(ttk.Frame):
         super().__init__(parent)
         self.db = db
         self.current_honorario_id = None
+        self._search_after_id = None
         self._build()
 
     # ── Build ─────────────────────────────────────────────────────────────────
@@ -33,7 +34,7 @@ class GestaoPagamentosTab(ttk.Frame):
 
         content = ttk.Frame(self, style='TFrame', padding=(24, 6, 24, 24))
         content.grid(row=1, column=0, sticky='nsew')
-        content.columnconfigure(0, weight=1, minsize=260)
+        content.columnconfigure(0, weight=1, minsize=320)
         content.columnconfigure(1, weight=3)
         content.rowconfigure(0, weight=1)
 
@@ -49,10 +50,10 @@ class GestaoPagamentosTab(ttk.Frame):
         ttk.Label(panel, text='Selecionar honorário', style='H2Card.TLabel').grid(
             row=0, column=0, sticky='w', pady=(0, 10))
 
-        ttk.Label(panel, text='Buscar por cliente', style='MutedCard.TLabel').grid(
+        ttk.Label(panel, text='Buscar por cliente ou nº do contrato', style='MutedCard.TLabel').grid(
             row=1, column=0, sticky='w', pady=(0, 4))
         self.search_var = tk.StringVar()
-        self.search_var.trace_add('write', lambda *_: self._refresh_tree())
+        self.search_var.trace_add('write', self._on_search_changed)
         ttk.Entry(panel, textvariable=self.search_var).grid(
             row=2, column=0, sticky='ew', ipady=4, pady=(0, 8))
 
@@ -61,18 +62,15 @@ class GestaoPagamentosTab(ttk.Frame):
         tree_frame.columnconfigure(0, weight=1)
         tree_frame.rowconfigure(0, weight=1)
 
-        self.tree = ttk.Treeview(tree_frame,
-                                 columns=('ctt_n', 'cliente', 'tipo', 'hipotese'),
-                                 show='headings', selectmode='browse')
-        self.tree.heading('ctt_n',     text='CTT-N')
-        self.tree.heading('cliente',   text='Cliente')
-        self.tree.heading('tipo',      text='Tipo')
-        self.tree.heading('hipotese',  text='Hipótese')
-        self.tree.column('ctt_n',    width=90,  stretch=False)
-        self.tree.column('cliente',  width=120, stretch=True)
-        self.tree.column('tipo',     width=120, stretch=False)
-        self.tree.column('hipotese', width=150, stretch=True)
-        self.tree.tag_configure('odd',  background=C_ROW_ODD)
+        self.tree = ttk.Treeview(tree_frame, columns=('info',),
+                                 show='tree headings', selectmode='browse')
+        self.tree.heading('#0', text='Contrato / Honorário', anchor='w')
+        self.tree.heading('info', text='Detalhes', anchor='w')
+        self.tree.column('#0', width=200, stretch=True)
+        self.tree.column('info', width=180, stretch=True)
+        self.tree.tag_configure('contrato', font=FONT_H3)
+        self.tree.tag_configure('honorario', font=FONT_BODY)
+        self.tree.tag_configure('odd', background=C_ROW_ODD)
         self.tree.tag_configure('even', background=C_ROW_EVEN)
         self.tree.grid(row=0, column=0, sticky='nsew')
         self.tree.bind('<<TreeviewSelect>>', self._on_tree_select)
@@ -171,31 +169,72 @@ class GestaoPagamentosTab(ttk.Frame):
 
         self._parcela_rows = []  # list of dicts with StringVars
 
-    # ── Tree ──────────────────────────────────────────────────────────────────
+    # ── Tree (hierarchical) ────────────────────────────────────────────────────
+
+    def _on_search_changed(self, *_args):
+        """Debounce search: wait 300ms after last keystroke before refreshing."""
+        if self._search_after_id is not None:
+            self.after_cancel(self._search_after_id)
+        self._search_after_id = self.after(300, self._refresh_tree)
 
     def _refresh_tree(self):
+        self._search_after_id = None
         self.tree.delete(*self.tree.get_children())
+
         q = self.search_var.get().strip()
-        contratos = self.db.search_contratos_by_cliente_nome(q) if q else \
-                    self.db.search_contratos_by_cliente_nome('')
+        rows = self.db.search_contratos_com_honorarios(q)
+
+        # Group by contract
+        contratos = {}
+        for r in rows:
+            ctt_n = r['ctt_n']
+            if ctt_n not in contratos:
+                contratos[ctt_n] = {
+                    'cliente_nome': r['cliente_nome'],
+                    'contrato_id': r['contrato_id'],
+                    'honorarios': [],
+                }
+            contratos[ctt_n]['honorarios'].append(r)
+
         idx = 0
-        for cont in contratos:
-            hons = self.db.get_honorarios_by_contrato(cont['id'])
-            for h in hons:
-                tag = 'odd' if idx % 2 else 'even'
+        for ctt_n, data in contratos.items():
+            # Contract node
+            contrato_iid = f'c_{data["contrato_id"]}'
+            self.tree.insert('', 'end', iid=contrato_iid,
+                             text=f'  {ctt_n}  —  {data["cliente_nome"]}',
+                             values=('',),
+                             tags=('contrato',), open=False)
+
+            for h in data['honorarios']:
                 tipo_lbl = TIPO_LABEL.get(h['tipo'], h['tipo'])
-                self.tree.insert('', 'end', iid=str(h['id']),
-                                 values=(cont['ctt_n'], cont['cliente_nome'],
-                                         tipo_lbl, h['hipotese'] or ''),
-                                 tags=(tag,))
+                valor_str = f'R$ {h["valor"]}' if h['valor'] else ''
+                hipotese_str = h['hipotese'] or ''
+                detail = valor_str
+                if hipotese_str:
+                    detail = f'{valor_str}  •  {hipotese_str}' if valor_str else hipotese_str
+
+                tag = 'odd' if idx % 2 == 0 else 'even'
+                self.tree.insert(contrato_iid, 'end',
+                                 iid=f'h_{h["honorario_id"]}',
+                                 text=f'    {tipo_lbl}',
+                                 values=(detail,),
+                                 tags=('honorario', tag))
                 idx += 1
 
     def _on_tree_select(self, _event=None):
         sel = self.tree.selection()
         if not sel:
             return
-        hid = int(sel[0])
-        self.load_honorario(hid)
+        iid = sel[0]
+        if iid.startswith('h_'):
+            hid = int(iid[2:])
+            self.load_honorario(hid)
+        elif iid.startswith('c_'):
+            # Expand/collapse contract node on click
+            if self.tree.item(iid, 'open'):
+                self.tree.item(iid, open=False)
+            else:
+                self.tree.item(iid, open=True)
 
     # ── Load honorario ────────────────────────────────────────────────────────
 
@@ -216,8 +255,8 @@ class GestaoPagamentosTab(ttk.Frame):
 
         # Select in tree if visible
         try:
-            self.tree.selection_set(str(honorario_id))
-            self.tree.see(str(honorario_id))
+            self.tree.selection_set(f'h_{honorario_id}')
+            self.tree.see(f'h_{honorario_id}')
         except Exception:
             pass
 
