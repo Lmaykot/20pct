@@ -76,10 +76,10 @@ class Database:
         self.conn.commit()
         return cur.lastrowid
 
-    def update_cliente(self, cid, nome, telefone, email, endereco, nome_repr, obs):
+    def update_cliente(self, cid, nome, cpf_cnpj, telefone, email, endereco, nome_repr, obs):
         self.conn.execute(
-            'UPDATE clientes SET nome=?,telefone=?,email=?,endereco=?,nome_representante=?,observacoes=? WHERE id=?',
-            (nome, telefone, email, endereco, nome_repr, obs, cid)
+            'UPDATE clientes SET nome=?,cpf_cnpj=?,telefone=?,email=?,endereco=?,nome_representante=?,observacoes=? WHERE id=?',
+            (nome, cpf_cnpj, telefone, email, endereco, nome_repr, obs, cid)
         )
         self.conn.commit()
 
