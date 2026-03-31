@@ -2,7 +2,13 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from styles import (C_WHITE, C_BG, C_BORDER, C_ACCENT, C_TEXT, C_MUTED,
                     C_ROW_ODD, C_ROW_EVEN, FONT_BODY, FONT_H2, FONT_H3,
-                    FONT_SMALL, FONT_TITLE, card_frame, field_label)
+                    FONT_SMALL, FONT_TITLE, card_frame, field_label,
+                    section_header)
+
+ESTADOS_BR = [
+    '', 'AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG',
+    'PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO',
+]
 
 
 class CadastroClienteTab(ttk.Frame):
@@ -19,12 +25,10 @@ class CadastroClienteTab(ttk.Frame):
         self.columnconfigure(0, weight=1)
         self.rowconfigure(1, weight=1)
 
-        # Header
         hdr = ttk.Frame(self, style='TFrame', padding=(24, 18, 24, 6))
         hdr.grid(row=0, column=0, sticky='ew')
         ttk.Label(hdr, text='Cadastro de Cliente', style='Title.TLabel').pack(side='left')
 
-        # Main content area (two columns: search list | form)
         content = ttk.Frame(self, style='TFrame', padding=(24, 6, 24, 24))
         content.grid(row=1, column=0, sticky='nsew')
         content.columnconfigure(0, weight=1, minsize=260)
@@ -75,53 +79,154 @@ class CadastroClienteTab(ttk.Frame):
         self._refresh_list()
 
     def _build_form_panel(self, parent):
-        panel = card_frame(parent, padding=20)
-        panel.grid(row=0, column=1, sticky='nsew')
+        # Scrollable card
+        outer = card_frame(parent)
+        outer.grid(row=0, column=1, sticky='nsew')
+        outer.columnconfigure(0, weight=1)
+        outer.rowconfigure(0, weight=1)
+
+        canvas = tk.Canvas(outer, bg=C_WHITE, highlightthickness=0)
+        canvas.grid(row=0, column=0, sticky='nsew')
+        vsb = ttk.Scrollbar(outer, orient='vertical', command=canvas.yview)
+        vsb.grid(row=0, column=1, sticky='ns')
+        canvas.configure(yscrollcommand=vsb.set)
+
+        panel = tk.Frame(canvas, bg=C_WHITE)
+        win = canvas.create_window((0, 0), window=panel, anchor='nw')
+
+        def _on_frame_configure(_e):
+            canvas.configure(scrollregion=canvas.bbox('all'))
+        def _on_canvas_resize(e):
+            canvas.itemconfig(win, width=e.width)
+
+        panel.bind('<Configure>', _on_frame_configure)
+        canvas.bind('<Configure>', _on_canvas_resize)
+        canvas.bind_all('<MouseWheel>', lambda e: canvas.yview_scroll(int(-1*(e.delta/120)), 'units'))
+
         panel.columnconfigure(1, weight=1)
+        self._panel = panel
 
-        self.form_title = ttk.Label(panel, text='Novo Cliente', style='H2Card.TLabel')
-        self.form_title.grid(row=0, column=0, columnspan=2, sticky='w', pady=(0, 16))
+        row = 0
+        pad = {'padx': 20}
 
-        fields = [
-            ('nome',             'Nome do cliente *'),
-            ('cpf_cnpj',         'CPF / CNPJ'),
-            ('telefone',         'Telefone'),
-            ('email',            'E-mail'),
-            ('endereco',         'Endereço'),
-            ('nome_representante', 'Nome do representante (PJ)'),
+        # Title
+        self.form_title = tk.Label(panel, text='Novo Cliente', bg=C_WHITE, fg=C_TEXT, font=FONT_H2)
+        self.form_title.grid(row=row, column=0, columnspan=2, sticky='w', padx=20, pady=(16, 4))
+        row += 1
+
+        # ── Dados Principais ──────────────────────────────────────────────
+        sh = section_header(panel, 'Dados Principais', icon='👤')
+        sh.grid(row=row, column=0, columnspan=2, sticky='ew', padx=20)
+        row += 1
+
+        fields_main = [
+            ('nome',    'Nome completo / Razão social *'),
+            ('cpf_cnpj', 'CPF / CNPJ'),
+            ('telefone', 'Telefone'),
+            ('email',    'E-mail de contato'),
         ]
         self.vars = {}
-        for i, (key, label) in enumerate(fields, start=1):
-            ttk.Label(panel, text=label, style='MutedCard.TLabel').grid(
-                row=i, column=0, sticky='w', padx=(0, 12), pady=3)
-            v = tk.StringVar()
-            self.vars[key] = v
-            ttk.Entry(panel, textvariable=v).grid(
-                row=i, column=1, sticky='ew', ipady=4, pady=3)
+        for key, label in fields_main:
+            self._field_row(panel, row, key, label, **pad)
+            row += 1
 
-        # Observações (Text widget)
-        ttk.Label(panel, text='Observações', style='MutedCard.TLabel').grid(
-            row=len(fields) + 1, column=0, sticky='nw', padx=(0, 12), pady=(8, 3))
-        obs_frame = ttk.Frame(panel, style='Card.TFrame')
-        obs_frame.grid(row=len(fields) + 1, column=1, sticky='ew', pady=(8, 3))
-        obs_frame.columnconfigure(0, weight=1)
-        self.obs_text = tk.Text(obs_frame, height=4, wrap='word',
+        # ── Endereço ──────────────────────────────────────────────────────
+        sh2 = section_header(panel, 'Endereço de Correspondência', icon='📍')
+        sh2.grid(row=row, column=0, columnspan=2, sticky='ew', padx=20)
+        row += 1
+
+        self._field_row(panel, row, 'cep', 'CEP', width=12, **pad)
+        row += 1
+
+        # Logradouro + Número on same row
+        lf = tk.Frame(panel, bg=C_WHITE)
+        lf.grid(row=row, column=0, columnspan=2, sticky='ew', padx=20, pady=3)
+        lf.columnconfigure(0, weight=3)
+        lf.columnconfigure(1, weight=1)
+        tk.Label(lf, text='Logradouro', bg=C_WHITE, fg=C_MUTED, font=FONT_SMALL).grid(
+            row=0, column=0, sticky='w')
+        tk.Label(lf, text='Número', bg=C_WHITE, fg=C_MUTED, font=FONT_SMALL).grid(
+            row=0, column=1, sticky='w', padx=(8, 0))
+        self.vars['logradouro'] = tk.StringVar()
+        ttk.Entry(lf, textvariable=self.vars['logradouro']).grid(
+            row=1, column=0, sticky='ew', ipady=4, padx=(0, 4))
+        self.vars['numero'] = tk.StringVar()
+        ttk.Entry(lf, textvariable=self.vars['numero']).grid(
+            row=1, column=1, sticky='ew', ipady=4, padx=(4, 0))
+        row += 1
+
+        self._field_row(panel, row, 'complemento', 'Complemento / Bairro', **pad)
+        row += 1
+
+        # Cidade + Estado on same row
+        cf = tk.Frame(panel, bg=C_WHITE)
+        cf.grid(row=row, column=0, columnspan=2, sticky='ew', padx=20, pady=3)
+        cf.columnconfigure(0, weight=3)
+        cf.columnconfigure(1, weight=1)
+        tk.Label(cf, text='Cidade', bg=C_WHITE, fg=C_MUTED, font=FONT_SMALL).grid(
+            row=0, column=0, sticky='w')
+        tk.Label(cf, text='Estado (UF)', bg=C_WHITE, fg=C_MUTED, font=FONT_SMALL).grid(
+            row=0, column=1, sticky='w', padx=(8, 0))
+        self.vars['cidade'] = tk.StringVar()
+        ttk.Entry(cf, textvariable=self.vars['cidade']).grid(
+            row=1, column=0, sticky='ew', ipady=4, padx=(0, 4))
+        self.vars['estado'] = tk.StringVar()
+        ttk.Combobox(cf, textvariable=self.vars['estado'],
+                     values=ESTADOS_BR, state='readonly', width=6).grid(
+            row=1, column=1, sticky='ew', ipady=4, padx=(4, 0))
+        row += 1
+
+        # ── Representante Legal ───────────────────────────────────────────
+        sh3 = section_header(panel, 'Representante Legal (PJ)', icon='🏛')
+        sh3.grid(row=row, column=0, columnspan=2, sticky='ew', padx=20)
+        row += 1
+
+        self._field_row(panel, row, 'nome_representante', 'Nome do representante', **pad)
+        row += 1
+
+        # ── Observações ───────────────────────────────────────────────────
+        sh4 = section_header(panel, 'Observações Internas', icon='📝')
+        sh4.grid(row=row, column=0, columnspan=2, sticky='ew', padx=20)
+        row += 1
+
+        tk.Label(panel, text='Notas e observações sobre o cliente',
+                 bg=C_WHITE, fg=C_MUTED, font=FONT_SMALL).grid(
+            row=row, column=0, columnspan=2, sticky='w', padx=20, pady=(0, 2))
+        row += 1
+        obs_f = tk.Frame(panel, bg=C_WHITE)
+        obs_f.grid(row=row, column=0, columnspan=2, sticky='ew', padx=20, pady=(0, 6))
+        obs_f.columnconfigure(0, weight=1)
+        self.obs_text = tk.Text(obs_f, height=4, wrap='word',
                                 font=FONT_BODY, bg=C_WHITE, fg=C_TEXT,
                                 relief='flat', bd=1,
                                 highlightthickness=1, highlightcolor=C_ACCENT,
                                 highlightbackground=C_BORDER)
         self.obs_text.grid(row=0, column=0, sticky='ew')
+        row += 1
 
         # Buttons
-        btn_row = ttk.Frame(panel, style='Card.TFrame')
-        btn_row.grid(row=len(fields) + 2, column=0, columnspan=2, sticky='e', pady=(16, 0))
-
+        btn_row = tk.Frame(panel, bg=C_WHITE)
+        btn_row.grid(row=row, column=0, columnspan=2, sticky='e', padx=20, pady=(8, 4))
         ttk.Button(btn_row, text='Cancelar', style='Secondary.TButton',
                    command=self._clear_form).pack(side='left', padx=(0, 8))
-        ttk.Button(btn_row, text='Salvar', command=self._save).pack(side='left')
+        ttk.Button(btn_row, text='Salvar Cadastro', command=self._save).pack(side='left')
+        row += 1
 
-        self.status_lbl = ttk.Label(panel, text='', style='MutedCard.TLabel')
-        self.status_lbl.grid(row=len(fields) + 3, column=0, columnspan=2, sticky='w', pady=(8, 0))
+        self.status_lbl = tk.Label(panel, text='', bg=C_WHITE, fg=C_ACCENT, font=FONT_SMALL)
+        self.status_lbl.grid(row=row, column=0, columnspan=2, sticky='w', padx=20, pady=(4, 16))
+
+    def _field_row(self, panel, row, key, label, width=None, **grid_kwargs):
+        tk.Label(panel, text=label, bg=C_WHITE, fg=C_MUTED, font=FONT_SMALL).grid(
+            row=row, column=0, columnspan=2, sticky='w', pady=(0, 1), **grid_kwargs)
+        v = tk.StringVar()
+        self.vars[key] = v
+        kw = {'ipady': 4, 'pady': (0, 6)}
+        if width:
+            ttk.Entry(panel, textvariable=v, width=width).grid(
+                row=row, column=0, columnspan=2, sticky='w', **kw, **grid_kwargs)
+        else:
+            ttk.Entry(panel, textvariable=v).grid(
+                row=row, column=0, columnspan=2, sticky='ew', **kw, **grid_kwargs)
 
     # ── Helpers ───────────────────────────────────────────────────────────────
 
@@ -147,7 +252,12 @@ class CadastroClienteTab(ttk.Frame):
         self.vars['cpf_cnpj'].set(c['cpf_cnpj'] or '')
         self.vars['telefone'].set(c['telefone'] or '')
         self.vars['email'].set(c['email'] or '')
-        self.vars['endereco'].set(c['endereco'] or '')
+        self.vars['cep'].set(c['cep'] or '')
+        self.vars['logradouro'].set(c['logradouro'] or '')
+        self.vars['numero'].set(c['numero'] or '')
+        self.vars['complemento'].set(c['complemento'] or '')
+        self.vars['cidade'].set(c['cidade'] or '')
+        self.vars['estado'].set(c['estado'] or '')
         self.vars['nome_representante'].set(c['nome_representante'] or '')
         self.obs_text.delete('1.0', 'end')
         self.obs_text.insert('1.0', c['observacoes'] or '')
@@ -167,19 +277,33 @@ class CadastroClienteTab(ttk.Frame):
         if not nome:
             messagebox.showwarning('Atenção', 'O nome do cliente é obrigatório.')
             return
-        cpf_cnpj  = self.vars['cpf_cnpj'].get().strip()
-        telefone  = self.vars['telefone'].get().strip()
-        email     = self.vars['email'].get().strip()
-        endereco  = self.vars['endereco'].get().strip()
-        nome_repr = self.vars['nome_representante'].get().strip()
-        obs       = self.obs_text.get('1.0', 'end').strip()
+
+        cpf_cnpj   = self.vars['cpf_cnpj'].get().strip()
+        telefone   = self.vars['telefone'].get().strip()
+        email      = self.vars['email'].get().strip()
+        cep        = self.vars['cep'].get().strip()
+        logradouro = self.vars['logradouro'].get().strip()
+        numero     = self.vars['numero'].get().strip()
+        complemento = self.vars['complemento'].get().strip()
+        cidade     = self.vars['cidade'].get().strip()
+        estado     = self.vars['estado'].get().strip()
+        nome_repr  = self.vars['nome_representante'].get().strip()
+        obs        = self.obs_text.get('1.0', 'end').strip()
 
         if self.current_cliente_id:
-            self.db.update_cliente(self.current_cliente_id, nome, cpf_cnpj, telefone, email, endereco, nome_repr, obs)
-            self.status_lbl.config(text='Cliente atualizado com sucesso.', foreground=C_ACCENT)
+            self.db.update_cliente(
+                self.current_cliente_id, nome, cpf_cnpj, telefone, email,
+                cep, logradouro, numero, complemento, cidade, estado,
+                nome_repr, obs
+            )
+            self.status_lbl.config(text='Cliente atualizado com sucesso.')
         else:
-            self.db.insert_cliente(nome, cpf_cnpj, telefone, email, endereco, nome_repr, obs)
-            self.status_lbl.config(text='Cliente cadastrado com sucesso.', foreground=C_ACCENT)
+            self.db.insert_cliente(
+                nome, cpf_cnpj, telefone, email,
+                cep, logradouro, numero, complemento, cidade, estado,
+                nome_repr, obs
+            )
+            self.status_lbl.config(text='Cliente cadastrado com sucesso.')
             self._clear_form()
 
         self._refresh_list()
