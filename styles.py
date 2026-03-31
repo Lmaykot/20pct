@@ -134,6 +134,18 @@ def apply_styles(root):
     return style
 
 
+def section_header(parent, text, icon=''):
+    """Renders a section divider with icon + bold label, for use inside card panels."""
+    f = ttk.Frame(parent, style='Card.TFrame')
+    f.columnconfigure(1, weight=1)
+    lbl_text = f'{icon}  {text}' if icon else text
+    ttk.Label(f, text=lbl_text, style='SectionHdr.TLabel').grid(
+        row=0, column=0, sticky='w', pady=(14, 4))
+    sep = tk.Frame(f, bg=C_DIVIDER, height=1)
+    sep.grid(row=1, column=0, columnspan=2, sticky='ew', pady=(0, 8))
+    return f
+
+
 def card_frame(parent, **kwargs):
     f = ttk.Frame(parent, style='Card.TFrame', **kwargs)
     return f
