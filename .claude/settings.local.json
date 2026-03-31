@@ -4,7 +4,11 @@
       "Bash(python -m py_compile ui_cadastro_contrato.py)",
       "Bash(python3 -m py_compile database.py main.py styles.py ui_cadastro_cliente.py ui_cadastro_contrato.py ui_gestao_pagamentos.py ui_honorarios_dialog.py ui_relatorio.py)",
       "Bash(npx skills:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(npm run:*)",
+      "Bash(pip install:*)",
+      "Bash(rm -f main.py database.py styles.py ui_cadastro_cliente.py ui_cadastro_contrato.py ui_gestao_pagamentos.py ui_honorarios_dialog.py ui_relatorio.py iniciar.bat gestao_contratos.db)",
+      "Bash(rm -rf __pycache__ contratos)"
     ]
   }
 }
