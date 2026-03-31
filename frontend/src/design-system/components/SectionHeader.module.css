@@ -1,0 +1,25 @@
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.icon {
+  font-size: var(--text-lg);
+  line-height: 1;
+}
+
+.text {
+  font-family: var(--font-heading);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-on-surface);
+}
+
+.line {
+  flex: 1;
+  height: 1px;
+  background: var(--color-outline-variant);
+  margin-left: var(--space-3);
+}
