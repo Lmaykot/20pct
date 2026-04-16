@@ -28,6 +28,30 @@ Sistema web para gestão de contratos jurídicos — clientes, honorários, parc
 
 ---
 
+## Screenshots
+
+<p align="center">
+  <img src="screenshots/tela-inicial.png" alt="Tela inicial" width="800" />
+  <br/><em>Tela inicial — listagem de contratos</em>
+</p>
+
+<p align="center">
+  <img src="screenshots/contratos.png" alt="Cadastro de contrato" width="800" />
+  <br/><em>Cadastro de contrato com múltiplos clientes e upload de PDF</em>
+</p>
+
+<p align="center">
+  <img src="screenshots/parcelas.png" alt="Gestão de parcelas" width="800" />
+  <br/><em>Gestão de parcelas — vencimento, pagamento e nota fiscal</em>
+</p>
+
+<p align="center">
+  <img src="screenshots/acompanhamento.png" alt="Relatório gerencial" width="800" />
+  <br/><em>Relatório gerencial — acompanhamento de honorários e quitação</em>
+</p>
+
+---
+
 ## Stack
 
 | Camada    | Tecnologia                          |
