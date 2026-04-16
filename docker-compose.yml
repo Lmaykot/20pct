@@ -1,5 +1,5 @@
 # =============================================================================
-# GestaoEsc — Sistema de Gestão de Contratos Jurídicos
+# 20% — Gestor de Contratos Advocatícios
 # =============================================================================
 # Pré-requisito: Docker instalado (https://docs.docker.com/get-docker/)
 #
@@ -17,7 +17,7 @@
 services:
 
   api:
-    image: ghcr.io/lmaykot/gestaoesc-api:latest
+    image: ghcr.io/lmaykot/20pct-api:latest
     # platform: linux/arm64  # descomente se usar Raspberry Pi ou Apple Silicon (M1/M2/M3)
     restart: unless-stopped
     ports:
@@ -30,7 +30,7 @@ services:
       - CONTRATOS_DIR=/app/contratos
 
   frontend:
-    image: ghcr.io/lmaykot/gestaoesc-frontend:latest
+    image: ghcr.io/lmaykot/20pct-frontend:latest
     # platform: linux/arm64  # descomente se usar Raspberry Pi ou Apple Silicon (M1/M2/M3)
     restart: unless-stopped
     ports:

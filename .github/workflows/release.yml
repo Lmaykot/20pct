@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/gestaoesc
+  IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/20pct
 
 jobs:
   build-backend:

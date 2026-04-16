@@ -24,12 +24,10 @@
   margin-bottom: var(--space-4);
 }
 
-.logoTitle {
-  font-family: var(--font-heading);
-  font-size: var(--text-xl);
-  font-weight: 800;
-  color: var(--color-primary);
-  letter-spacing: -0.02em;
+.logoImg {
+  width: 120px;
+  height: auto;
+  display: block;
 }
 
 .logoSub {

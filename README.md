@@ -1,9 +1,17 @@
-# GestaoEsc
+<p align="center">
+  <img src="Logo.svg" alt="20%" width="260" />
+</p>
 
-![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=flat&logo=fastapi)
-![React](https://img.shields.io/badge/React-18-61DAFB?style=flat&logo=react)
-![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=flat&logo=docker)
-![SQLite](https://img.shields.io/badge/SQLite-local-003B57?style=flat&logo=sqlite)
+<h3 align="center">Gestor de contratos advocatícios</h3>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/FastAPI-0.115-009688?style=flat&logo=fastapi" />
+  <img src="https://img.shields.io/badge/React-18-61DAFB?style=flat&logo=react" />
+  <img src="https://img.shields.io/badge/Docker-Compose-2496ED?style=flat&logo=docker" />
+  <img src="https://img.shields.io/badge/SQLite-local-003B57?style=flat&logo=sqlite" />
+</p>
+
+---
 
 Sistema web para gestão de contratos jurídicos — clientes, honorários, parcelas e relatórios de inadimplência.
 
@@ -99,10 +107,12 @@ GestaoEsc/
 │   │   ├── pages/           # CadastroCliente, CadastroContrato, GestaoPagamentos, Relatorio, Inadimplentes
 │   │   ├── layouts/         # AppShell (navegação por abas)
 │   │   ├── api/             # Funções de chamada à API
+│   │   ├── assets/          # Logo e imagens
 │   │   ├── design-system/   # Componentes UI reutilizáveis
 │   │   └── types/           # Tipos TypeScript
 │   ├── Dockerfile
 │   └── vite.config.ts
+├── Logo.svg
 ├── docker-compose.yml
 └── .github/
     └── workflows/

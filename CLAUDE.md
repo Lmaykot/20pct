@@ -29,7 +29,7 @@ npm run dev
 
 ## Architecture
 
-**GestaoEsc** is a Portuguese-language legal contract management web app.
+**20%** (formerly GestaoEsc) is a Portuguese-language legal contract management web app.
 
 - **Backend**: FastAPI + SQLite (`backend/`)
 - **Frontend**: React + TypeScript + Vite (`frontend/`)

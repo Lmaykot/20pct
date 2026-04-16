@@ -1,6 +1,7 @@
 import { ReactNode } from 'react'
 import { NavLink } from 'react-router-dom'
 import styles from './AppShell.module.css'
+import logoSrc from '../assets/Logo.svg'
 
 const NAV_ITEMS = [
   { to: '/clientes', icon: '\u{1F465}', label: 'Clientes' },
@@ -19,8 +20,8 @@ export function AppShell({ children }: AppShellProps) {
     <div className={styles.shell}>
       <aside className={styles.sidebar}>
         <div className={styles.logo}>
-          <div className={styles.logoTitle}>GestaoEsc</div>
-          <div className={styles.logoSub}>Gestão de Contratos</div>
+          <img src={logoSrc} alt="20%" className={styles.logoImg} />
+          <div className={styles.logoSub}>Gestor de contratos advocatícios</div>
         </div>
         <nav className={styles.nav}>
           {NAV_ITEMS.map(item => (

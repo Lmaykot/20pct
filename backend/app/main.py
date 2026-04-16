@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers import clientes, contratos, honorarios, parcelas, relatorio
 
-app = FastAPI(title="GestaoEsc API", version="1.0.0")
+app = FastAPI(title="20% API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
