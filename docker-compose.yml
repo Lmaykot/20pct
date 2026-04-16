@@ -1,24 +1,47 @@
+# =============================================================================
+# GestaoEsc — Sistema de Gestão de Contratos Jurídicos
+# =============================================================================
+# Pré-requisito: Docker instalado (https://docs.docker.com/get-docker/)
+#
+# Uso:
+#   Subir:    docker compose up -d
+#   Parar:    docker compose down
+#   Logs:     docker compose logs -f
+#   Atualizar imagens: docker compose pull && docker compose up -d
+#
+# Acesso após subir:
+#   Aplicação: http://localhost:3000
+#   API Docs:  http://localhost:8000/docs
+# =============================================================================
+
 services:
+
   api:
     image: ghcr.io/lmaykot/gestaoesc-api:latest
-    platform: linux/arm64
+    # platform: linux/arm64  # descomente se usar Raspberry Pi ou Apple Silicon (M1/M2/M3)
+    restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "8000:8000"         # API REST
     volumes:
-      - db-data:/app/data
-      - pdf-storage:/app/contratos
+      - db-data:/app/data          # banco SQLite — persiste entre reinicializações
+      - pdf-storage:/app/contratos # PDFs dos contratos — persiste entre reinicializações
     environment:
       - DB_PATH=/app/data/gestao_contratos.db
       - CONTRATOS_DIR=/app/contratos
 
   frontend:
     image: ghcr.io/lmaykot/gestaoesc-frontend:latest
-    platform: linux/arm64
+    # platform: linux/arm64  # descomente se usar Raspberry Pi ou Apple Silicon (M1/M2/M3)
+    restart: unless-stopped
     ports:
-      - "3000:80"
+      - "3000:80"           # interface web
     depends_on:
       - api
 
+# -----------------------------------------------------------------------------
+# Volumes nomeados — os dados ficam gerenciados pelo Docker e sobrevivem a
+# `docker compose down`. Para apagar tudo: docker compose down -v
+# -----------------------------------------------------------------------------
 volumes:
   db-data:
   pdf-storage:
