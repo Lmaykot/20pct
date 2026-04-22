@@ -34,29 +34,46 @@ O objetivo foi resolver uma necessidade real do escritório — controlar contra
 - **Relatório gerencial** — visão completa do contrato com status de quitação
 - **Inadimplentes** — dashboard de contratos com parcelas em atraso
 
+- Temas: Claro e Escuro
+
 ---
 
 ## Screenshots
 
-<p align="center">
-  <img src="screenshots/tela-inicial.png" alt="Tela inicial" width="400" />
-  <br/><em>Tela inicial — listagem de contratos</em>
-</p>
-
-<p align="center">
-  <img src="screenshots/contratos.png" alt="Cadastro de contrato" width="400" />
-  <br/><em>Cadastro de contrato com múltiplos clientes e upload de PDF</em>
-</p>
-
-<p align="center">
-  <img src="screenshots/parcelas.png" alt="Gestão de parcelas" width="400" />
-  <br/><em>Gestão de parcelas — vencimento, pagamento e nota fiscal</em>
-</p>
-
-<p align="center">
-  <img src="screenshots/acompanhamento.png" alt="Relatório gerencial" width="400" />
-  <br/><em>Relatório gerencial — acompanhamento de honorários e quitação</em>
-</p>
+<table>
+  <tr>
+    <td>
+      <img src="screenshots/2-claro.png" />
+    </td>
+    <td>
+      <img src="screenshots/2-dark.png" />
+    </td>
+  </tr>
+    <tr>
+    <td>
+      <img src="screenshots/1-claro.png" />
+    </td>
+    <td>
+      <img src="screenshots/1-dark.png" />
+    </td>
+  </tr>
+    <tr>
+    <td>
+      <img src="screenshots/3-claro.png" />
+    </td>
+    <td>
+      <img src="screenshots/3-dark.png" />
+    </td>
+    <tr>
+    <td>
+      <img src="screenshots/4-claro.png" />
+    <td>
+      <img src="screenshots/4-dark.png" />
+    </td>
+    </td>
+    </tr>
+  </tr>
+</table>
 
 ---
 
