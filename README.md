@@ -17,11 +17,19 @@ Sistema web para gestão de contratos jurídicos — clientes, honorários, parc
 
 ---
 
+## Sobre o projeto
+
+Este sistema foi criado por um **advogado entusiasta de tecnologia**, sem experiência prévia em desenvolvimento de software. Todo o código foi escrito com o auxílio do **[Claude Code](https://claude.ai/code)** (Anthropic).
+
+O objetivo foi resolver uma necessidade real do escritório — controlar contratos, honorários e inadimplência — sem depender de planilhas ou sistemas genéricos. Se você também não é desenvolvedor mas quer criar suas próprias ferramentas, esse projeto é a prova de que é possível.
+
+---
+
 ## Funcionalidades
 
 - **Clientes** — cadastro com CPF/CNPJ, endereço completo e representante
 - **Contratos** — numeração automática (CTT-N-001, CTT-N-002…), múltiplos clientes por contrato e upload de PDF
-- **Honorários** — 4 tipos: inicial, condicionado, intermediário e êxito
+- **Honorários** — Tipos variados: inicial, condicionado, intermediário, mensal, êxito e hora trabalhada.
 - **Parcelas** — controle de vencimento, data de pagamento e número de nota fiscal
 - **Relatório gerencial** — visão completa do contrato com status de quitação
 - **Inadimplentes** — dashboard de contratos com parcelas em atraso
@@ -31,22 +39,22 @@ Sistema web para gestão de contratos jurídicos — clientes, honorários, parc
 ## Screenshots
 
 <p align="center">
-  <img src="screenshots/tela-inicial.png" alt="Tela inicial" width="800" />
+  <img src="screenshots/tela-inicial.png" alt="Tela inicial" width="400" />
   <br/><em>Tela inicial — listagem de contratos</em>
 </p>
 
 <p align="center">
-  <img src="screenshots/contratos.png" alt="Cadastro de contrato" width="800" />
+  <img src="screenshots/contratos.png" alt="Cadastro de contrato" width="400" />
   <br/><em>Cadastro de contrato com múltiplos clientes e upload de PDF</em>
 </p>
 
 <p align="center">
-  <img src="screenshots/parcelas.png" alt="Gestão de parcelas" width="800" />
+  <img src="screenshots/parcelas.png" alt="Gestão de parcelas" width="400" />
   <br/><em>Gestão de parcelas — vencimento, pagamento e nota fiscal</em>
 </p>
 
 <p align="center">
-  <img src="screenshots/acompanhamento.png" alt="Relatório gerencial" width="800" />
+  <img src="screenshots/acompanhamento.png" alt="Relatório gerencial" width="400" />
   <br/><em>Relatório gerencial — acompanhamento de honorários e quitação</em>
 </p>
 
@@ -148,14 +156,6 @@ GestaoEsc/
 ## API
 
 A documentação interativa da API está disponível em http://localhost:8000/docs (Swagger UI gerado automaticamente pelo FastAPI).
-
----
-
-## Sobre o projeto
-
-Este sistema foi criado por um **advogado entusiasta de tecnologia**, sem experiência prévia em desenvolvimento de software. Todo o código foi escrito com o auxílio do **[Claude Code](https://claude.ai/code)** (Anthropic).
-
-O objetivo foi resolver uma necessidade real do escritório — controlar contratos, honorários e inadimplência — sem depender de planilhas ou sistemas genéricos. Se você também não é desenvolvedor mas quer criar suas próprias ferramentas, esse projeto é a prova de que é possível.
 
 ---
 
