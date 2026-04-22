@@ -13,6 +13,7 @@ export const contratosApi = {
   create: (data: Omit<Contrato, 'id' | 'created_at' | 'cliente_nome'>) => api.post<Contrato>('/contratos', data),
   update: (id: number, data: { descricao: string; tipo: string; advogado: string; observacoes: string; data_assinatura: string; status: string; arquivo_path: string }) =>
     api.put<Contrato>(`/contratos/${id}`, data),
+  remove: (id: number) => api.del<{ ok: boolean }>(`/contratos/${id}`),
   nextCttN: () => api.get<{ ctt_n: string }>('/contratos/next-ctt-n'),
   getClientes: (id: number) => api.get<Cliente[]>(`/contratos/${id}/clientes`),
   setClientes: (id: number, cliente_ids: number[]) => api.put<{ ok: boolean }>(`/contratos/${id}/clientes`, { cliente_ids }),

@@ -70,6 +70,22 @@ export function CadastroContrato() {
     setExtraClientes([])
   }
 
+  const handleDelete = async () => {
+    if (!selectedId) return
+    if (!confirm(`Remover o contrato ${form.ctt_n}?\n\nHonorários, parcelas e PDF anexado também serão apagados. Essa ação não pode ser desfeita.`)) return
+    try {
+      await contratosApi.remove(selectedId)
+      setSelectedId(null)
+      setForm(EMPTY_FORM)
+      setClienteId(null)
+      setClienteNome('')
+      setExtraClientes([])
+      await loadList()
+    } catch (err) {
+      alert(`Erro ao remover: ${err instanceof Error ? err.message : String(err)}`)
+    }
+  }
+
   const searchClientes = async (q: string) => {
     setClienteNome(q)
     if (q.length < 2) { setClienteResults([]); setShowDropdown(false); return }
@@ -320,6 +336,11 @@ export function CadastroContrato() {
 
           <div className={styles.actions}>
             <Button variant="secondary" onClick={handleCancel}>Cancelar</Button>
+            {selectedId && (
+              <Button variant="danger" onClick={handleDelete} disabled={saving}>
+                Remover
+              </Button>
+            )}
             <Button variant="secondary" onClick={() => handleSave(false)} disabled={saving || !clienteId}>
               Salvar
             </Button>

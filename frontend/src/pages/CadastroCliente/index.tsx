@@ -65,6 +65,24 @@ export function CadastroCliente() {
     }
   }
 
+  const handleDelete = async () => {
+    if (!selectedId) return
+    if (!confirm(`Remover o cadastro de "${form.nome}"?\n\nEssa ação não pode ser desfeita.`)) return
+    try {
+      await clientesApi.remove(selectedId)
+      setSelectedId(null)
+      setForm(EMPTY)
+      await loadList()
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err)
+      if (msg.includes('409')) {
+        alert('Este cliente possui contratos vinculados. Remova os contratos antes.')
+      } else {
+        alert(`Erro ao remover: ${msg}`)
+      }
+    }
+  }
+
   const field = (key: keyof typeof form, label: string) => (
     <Input
       label={label}
@@ -144,6 +162,11 @@ export function CadastroCliente() {
 
           <div className={styles.actions}>
             <Button variant="secondary" onClick={handleCancel}>Cancelar</Button>
+            {selectedId && (
+              <Button variant="danger" onClick={handleDelete} disabled={saving}>
+                Remover
+              </Button>
+            )}
             <Button onClick={handleSave} disabled={saving || !form.nome.trim()}>
               {saving ? 'Salvando...' : 'Salvar Cadastro'}
             </Button>

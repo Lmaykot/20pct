@@ -6,4 +6,5 @@ export const clientesApi = {
   get: (id: number) => api.get<Cliente>(`/clientes/${id}`),
   create: (data: Omit<Cliente, 'id' | 'created_at'>) => api.post<Cliente>('/clientes', data),
   update: (id: number, data: Omit<Cliente, 'id' | 'created_at'>) => api.put<Cliente>(`/clientes/${id}`, data),
+  remove: (id: number) => api.del<{ ok: boolean }>(`/clientes/${id}`),
 }

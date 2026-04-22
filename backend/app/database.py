@@ -135,6 +135,22 @@ class Database:
     def get_cliente(self, cid):
         return self.conn.execute('SELECT * FROM clientes WHERE id=?', (cid,)).fetchone()
 
+    def count_contratos_by_cliente(self, cliente_id):
+        row = self.conn.execute(
+            '''SELECT COUNT(*) AS n FROM (
+                SELECT id FROM contratos WHERE cliente_id=?
+                UNION
+                SELECT contrato_id AS id FROM contrato_clientes WHERE cliente_id=?
+            )''',
+            (cliente_id, cliente_id)
+        ).fetchone()
+        return row['n'] if row else 0
+
+    def delete_cliente(self, cid):
+        self.conn.execute('DELETE FROM contrato_clientes WHERE cliente_id=?', (cid,))
+        self.conn.execute('DELETE FROM clientes WHERE id=?', (cid,))
+        self.conn.commit()
+
     def search_clientes(self, query):
         return self.conn.execute(
             'SELECT * FROM clientes WHERE nome LIKE ? ORDER BY nome',
@@ -188,6 +204,17 @@ class Database:
             FROM contratos c JOIN clientes cl ON c.cliente_id=cl.id
             WHERE c.id=?
         ''', (cid,)).fetchone()
+
+    def delete_contrato(self, cid):
+        honorarios = self.conn.execute(
+            'SELECT id FROM honorarios WHERE contrato_id=?', (cid,)
+        ).fetchall()
+        for h in honorarios:
+            self.conn.execute('DELETE FROM parcelas WHERE honorario_id=?', (h['id'],))
+        self.conn.execute('DELETE FROM honorarios WHERE contrato_id=?', (cid,))
+        self.conn.execute('DELETE FROM contrato_clientes WHERE contrato_id=?', (cid,))
+        self.conn.execute('DELETE FROM contratos WHERE id=?', (cid,))
+        self.conn.commit()
 
     def search_contratos_by_cliente_nome(self, nome):
         return self.conn.execute('''

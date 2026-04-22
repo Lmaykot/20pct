@@ -64,6 +64,22 @@ def update_contrato(contrato_id: int, data: ContratoUpdate, db: Database = Depen
     return _row_to_dict(db.get_contrato(contrato_id))
 
 
+@router.delete("/{contrato_id}")
+def delete_contrato(contrato_id: int, db: Database = Depends(get_db)):
+    contrato = db.get_contrato(contrato_id)
+    if not contrato:
+        raise HTTPException(404, "Contrato not found")
+    if contrato['arquivo_path']:
+        filepath = os.path.join(CONTRATOS_DIR, contrato['arquivo_path'])
+        if os.path.exists(filepath):
+            try:
+                os.remove(filepath)
+            except OSError:
+                pass
+    db.delete_contrato(contrato_id)
+    return {"ok": True}
+
+
 # -- Extra clients --
 
 @router.get("/{contrato_id}/clientes", response_model=list[ClienteResponse])

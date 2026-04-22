@@ -44,3 +44,13 @@ def update_cliente(cliente_id: int, data: ClienteCreate, db: Database = Depends(
         data.cidade, data.estado, data.nome_representante, data.observacoes
     )
     return _row_to_dict(db.get_cliente(cliente_id))
+
+
+@router.delete("/{cliente_id}")
+def delete_cliente(cliente_id: int, db: Database = Depends(get_db)):
+    if not db.get_cliente(cliente_id):
+        raise HTTPException(404, "Cliente not found")
+    if db.count_contratos_by_cliente(cliente_id) > 0:
+        raise HTTPException(409, "Cliente possui contratos vinculados. Remova os contratos antes.")
+    db.delete_cliente(cliente_id)
+    return {"ok": True}
