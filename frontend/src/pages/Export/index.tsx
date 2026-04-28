@@ -19,10 +19,8 @@ const CONTRATOS_OPTIONS: ExportOption[] = [
   { id: 'contratos-zip', title: 'Arquivos ZIP', description: 'Baixa todos os arquivos de contrato compactados (.zip)', format: 'original' },
 ]
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000'
-
 async function downloadFile(endpoint: string, filename: string) {
-  const response = await fetch(`${API_BASE}${endpoint}`)
+  const response = await fetch(endpoint)
   if (!response.ok) {
     throw new Error('Erro ao baixar arquivo')
   }
