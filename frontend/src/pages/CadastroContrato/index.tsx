@@ -25,6 +25,9 @@ export function CadastroContrato() {
   const [clienteResults, setClienteResults] = useState<Cliente[]>([])
   const [showDropdown, setShowDropdown] = useState(false)
   const [extraClientes, setExtraClientes] = useState<Cliente[]>([])
+  const [extraSearch, setExtraSearch] = useState('')
+  const [extraResults, setExtraResults] = useState<Cliente[]>([])
+  const [showExtraDropdown, setShowExtraDropdown] = useState(false)
   const [saving, setSaving] = useState(false)
   const [pdfError, setPdfError] = useState('')
   const [honorariosOpen, setHonorariosOpen] = useState(false)
@@ -100,16 +103,21 @@ export function CadastroContrato() {
     setShowDropdown(false)
   }
 
-  const addExtraCliente = async () => {
-    const q = prompt('Nome do cliente adicional:')
-    if (!q) return
+  const searchExtraClientes = async (q: string) => {
+    setExtraSearch(q)
+    if (q.length < 2) { setExtraResults([]); setShowExtraDropdown(false); return }
     const results = await clientesApi.list(q)
-    if (results.length > 0) {
-      const c = results[0]
-      if (!extraClientes.find(e => e.id === c.id) && c.id !== clienteId) {
-        setExtraClientes(prev => [...prev, c])
-      }
+    setExtraResults(results)
+    setShowExtraDropdown(true)
+  }
+
+  const pickExtraCliente = (c: Cliente) => {
+    if (!extraClientes.find(e => e.id === c.id) && c.id !== clienteId) {
+      setExtraClientes(prev => [...prev, c])
     }
+    setExtraSearch('')
+    setExtraResults([])
+    setShowExtraDropdown(false)
   }
 
   const removeExtraCliente = (id: number) => {
@@ -262,19 +270,37 @@ export function CadastroContrato() {
                 </div>
               )}
             </div>
-            <div style={{ marginTop: 'var(--space-3)' }}>
-              <Button size="sm" variant="ghost" onClick={addExtraCliente}>+ Adicionar cliente</Button>
-              {extraClientes.length > 0 && (
-                <div className={styles.chipList}>
-                  {extraClientes.map(c => (
-                    <span key={c.id} className={styles.extraChip}>
-                      {c.nome}
-                      <span className={styles.extraChipRemove} onClick={() => removeExtraCliente(c.id)}>&times;</span>
-                    </span>
-                  ))}
+            <div style={{ marginTop: 'var(--space-4)' }} className={styles.clientePickerWrapper}>
+              <Input
+                label="Adicionar cliente"
+                value={extraSearch}
+                onChange={e => searchExtraClientes(e.target.value)}
+                onFocus={() => extraResults.length > 0 && setShowExtraDropdown(true)}
+                onBlur={() => setTimeout(() => setShowExtraDropdown(false), 200)}
+                placeholder="Digite para buscar..."
+              />
+              {showExtraDropdown && extraResults.length > 0 && (
+                <div className={styles.dropdown}>
+                  {extraResults
+                    .filter(c => c.id !== clienteId && !extraClientes.find(e => e.id === c.id))
+                    .map(c => (
+                      <div key={c.id} className={styles.dropdownItem} onMouseDown={() => pickExtraCliente(c)}>
+                        {c.nome} {c.cpf_cnpj && `- ${c.cpf_cnpj}`}
+                      </div>
+                    ))}
                 </div>
               )}
             </div>
+            {extraClientes.length > 0 && (
+              <div className={styles.chipList}>
+                {extraClientes.map(c => (
+                  <span key={c.id} className={styles.extraChip}>
+                    {c.nome}
+                    <span className={styles.extraChipRemove} onClick={() => removeExtraCliente(c.id)}>&times;</span>
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className={styles.section}>

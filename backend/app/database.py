@@ -270,15 +270,23 @@ class Database:
     # -- Honorarios --
 
     def replace_honorarios(self, contrato_id, rows):
-        existing = self.get_honorarios_by_contrato(contrato_id)
-        for h in existing:
-            self.conn.execute('DELETE FROM parcelas WHERE honorario_id=?', (h['id'],))
-        self.conn.execute('DELETE FROM honorarios WHERE contrato_id=?', (contrato_id,))
-        for r in rows:
-            self.conn.execute(
-                'INSERT INTO honorarios (contrato_id,tipo,hipotese,valor,ordem) VALUES (?,?,?,?,?)',
-                (contrato_id, r[0], r[1], r[2], r[3])
-            )
+        existing_ids = {r['id'] for r in self.get_honorarios_by_contrato(contrato_id)}
+        incoming_ids = set()
+        for hid, tipo, hipotese, valor, ordem in rows:
+            if hid is not None and hid in existing_ids:
+                self.conn.execute(
+                    'UPDATE honorarios SET tipo=?, hipotese=?, valor=?, ordem=? WHERE id=? AND contrato_id=?',
+                    (tipo, hipotese, valor, ordem, hid, contrato_id)
+                )
+                incoming_ids.add(hid)
+            else:
+                self.conn.execute(
+                    'INSERT INTO honorarios (contrato_id,tipo,hipotese,valor,ordem) VALUES (?,?,?,?,?)',
+                    (contrato_id, tipo, hipotese, valor, ordem)
+                )
+        for hid in existing_ids - incoming_ids:
+            self.conn.execute('DELETE FROM parcelas WHERE honorario_id=?', (hid,))
+            self.conn.execute('DELETE FROM honorarios WHERE id=?', (hid,))
         self.conn.commit()
 
     def get_honorarios_by_contrato(self, contrato_id):

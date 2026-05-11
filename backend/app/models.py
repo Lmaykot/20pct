@@ -62,6 +62,7 @@ class ContratoClientesPayload(BaseModel):
 # -- Honorarios --
 
 class HonorarioRow(BaseModel):
+    id: int | None = None
     tipo: str
     hipotese: str = ''
     valor: str = ''

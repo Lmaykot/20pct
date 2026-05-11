@@ -5,6 +5,7 @@ import { TIPO_ORDER, TIPO_LABELS } from '../../types'
 import styles from './HonorariosDialog.module.css'
 
 interface Row {
+  id?: number
   hipotese: string
   valor: string
 }
@@ -32,7 +33,7 @@ export function HonorariosDialog({ open, contratoId, onClose }: HonorariosDialog
     const s = emptySections()
     for (const h of honorarios) {
       if (s[h.tipo]) {
-        s[h.tipo].push({ hipotese: h.hipotese, valor: h.valor })
+        s[h.tipo].push({ id: h.id, hipotese: h.hipotese, valor: h.valor })
       }
     }
     for (const tipo of TIPO_ORDER) {
@@ -68,11 +69,11 @@ export function HonorariosDialog({ open, contratoId, onClose }: HonorariosDialog
     if (!contratoId) return
     setSaving(true)
     try {
-      const rows: { tipo: string; hipotese: string; valor: string; ordem: number }[] = []
+      const rows: { id?: number; tipo: string; hipotese: string; valor: string; ordem: number }[] = []
       for (const tipo of TIPO_ORDER) {
         sections[tipo].forEach((r, i) => {
           if (r.hipotese.trim() || r.valor.trim()) {
-            rows.push({ tipo, hipotese: r.hipotese, valor: r.valor, ordem: i })
+            rows.push({ id: r.id, tipo, hipotese: r.hipotese, valor: r.valor, ordem: i })
           }
         })
       }

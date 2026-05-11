@@ -18,7 +18,7 @@ def get_honorarios(contrato_id: int, db: Database = Depends(get_db)):
 
 @router.put("/api/contratos/{contrato_id}/honorarios")
 def replace_honorarios(contrato_id: int, data: HonorariosPayload, db: Database = Depends(get_db)):
-    rows = [(h.tipo, h.hipotese, h.valor, h.ordem) for h in data.honorarios]
+    rows = [(h.id, h.tipo, h.hipotese, h.valor, h.ordem) for h in data.honorarios]
     db.replace_honorarios(contrato_id, rows)
     return {"ok": True}
 
