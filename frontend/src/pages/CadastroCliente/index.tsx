@@ -1,10 +1,41 @@
 import { useState, useEffect, useCallback } from 'react'
 import { clientesApi } from '../../api/clientes'
-import { Card, Button, Input, TextArea, SearchInput, DataTable, SectionHeader } from '../../design-system/components'
+import { Card, Button, Input, TextArea, SearchInput, DataTable, SectionHeader, Select } from '../../design-system/components'
 import type { Column } from '../../design-system/components'
 import type { Cliente } from '../../types'
 import { useDebounce } from '../../hooks/useDebounce'
 import styles from './CadastroCliente.module.css'
+
+const ESTADOS = [
+  { value: '', label: 'Selecione...' },
+  { value: 'AC', label: 'Acre (AC)' },
+  { value: 'AL', label: 'Alagoas (AL)' },
+  { value: 'AP', label: 'Amapá (AP)' },
+  { value: 'AM', label: 'Amazonas (AM)' },
+  { value: 'BA', label: 'Bahia (BA)' },
+  { value: 'CE', label: 'Ceará (CE)' },
+  { value: 'DF', label: 'Distrito Federal (DF)' },
+  { value: 'ES', label: 'Espírito Santo (ES)' },
+  { value: 'GO', label: 'Goiás (GO)' },
+  { value: 'MA', label: 'Maranhão (MA)' },
+  { value: 'MT', label: 'Mato Grosso (MT)' },
+  { value: 'MS', label: 'Mato Grosso do Sul (MS)' },
+  { value: 'MG', label: 'Minas Gerais (MG)' },
+  { value: 'PA', label: 'Pará (PA)' },
+  { value: 'PB', label: 'Paraíba (PB)' },
+  { value: 'PR', label: 'Paraná (PR)' },
+  { value: 'PE', label: 'Pernambuco (PE)' },
+  { value: 'PI', label: 'Piauí (PI)' },
+  { value: 'RJ', label: 'Rio de Janeiro (RJ)' },
+  { value: 'RN', label: 'Rio Grande do Norte (RN)' },
+  { value: 'RS', label: 'Rio Grande do Sul (RS)' },
+  { value: 'RO', label: 'Rondônia (RO)' },
+  { value: 'RR', label: 'Roraima (RR)' },
+  { value: 'SC', label: 'Santa Catarina (SC)' },
+  { value: 'SP', label: 'São Paulo (SP)' },
+  { value: 'SE', label: 'Sergipe (SE)' },
+  { value: 'TO', label: 'Tocantins (TO)' },
+]
 
 const EMPTY: Omit<Cliente, 'id' | 'created_at'> = {
   nome: '', cpf_cnpj: '', telefone: '', email: '',
@@ -19,6 +50,8 @@ export function CadastroCliente() {
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [form, setForm] = useState(EMPTY)
   const [saving, setSaving] = useState(false)
+  const [municipios, setMunicipios] = useState<string[]>([])
+  const [loadingCep, setLoadingCep] = useState(false)
 
   const loadList = useCallback(async () => {
     const data = await clientesApi.list(debouncedSearch)
@@ -26,6 +59,41 @@ export function CadastroCliente() {
   }, [debouncedSearch])
 
   useEffect(() => { loadList() }, [loadList])
+
+  useEffect(() => {
+    if (!form.estado) {
+      setMunicipios([])
+      return
+    }
+    fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${form.estado}/municipios?orderBy=nome`)
+      .then(r => r.json())
+      .then((data: { nome: string }[]) => setMunicipios(data.map(m => m.nome)))
+      .catch(() => setMunicipios([]))
+  }, [form.estado])
+
+  const handleCepChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value
+    setForm(prev => ({ ...prev, cep: raw }))
+    const digits = raw.replace(/\D/g, '')
+    if (digits.length !== 8) return
+    setLoadingCep(true)
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${digits}/json/`)
+      const data = await res.json()
+      if (!data.erro) {
+        setForm(prev => ({
+          ...prev,
+          logradouro: data.logradouro || prev.logradouro,
+          cidade: data.localidade || prev.cidade,
+          estado: data.uf || prev.estado,
+        }))
+      }
+    } catch {
+      // silently ignore lookup failures
+    } finally {
+      setLoadingCep(false)
+    }
+  }
 
   const handleSelect = async (c: Cliente) => {
     setSelectedId(c.id)
@@ -135,12 +203,32 @@ export function CadastroCliente() {
           <div className={styles.section}>
             <SectionHeader text="Endereco" />
             <div className={styles.formGrid}>
-              {field('cep', 'CEP')}
+              <Input
+                label="CEP"
+                value={form.cep}
+                onChange={handleCepChange}
+                disabled={loadingCep}
+                placeholder="00000-000"
+              />
               <div className={styles.fullWidth}>{field('logradouro', 'Logradouro')}</div>
               {field('numero', 'Numero')}
               {field('complemento', 'Complemento')}
-              {field('cidade', 'Cidade')}
-              {field('estado', 'Estado')}
+              <Select
+                label="Estado"
+                value={form.estado}
+                options={ESTADOS}
+                onChange={e => setForm(prev => ({ ...prev, estado: e.target.value, cidade: '' }))}
+              />
+              <Select
+                label="Município"
+                value={form.cidade}
+                options={[
+                  { value: '', label: municipios.length === 0 ? 'Selecione um estado...' : 'Selecione...' },
+                  ...municipios.map(m => ({ value: m, label: m })),
+                ]}
+                onChange={e => setForm(prev => ({ ...prev, cidade: e.target.value }))}
+                disabled={municipios.length === 0}
+              />
             </div>
           </div>
 
