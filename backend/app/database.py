@@ -175,16 +175,16 @@ class Database:
     # -- Contratos --
 
     def get_next_ctt_n(self):
-        row = self.conn.execute(
-            "SELECT ctt_n FROM contratos ORDER BY id DESC LIMIT 1"
-        ).fetchone()
-        if not row:
-            return 'CTT-N-001'
-        try:
-            num = int(row['ctt_n'].split('-')[-1]) + 1
-        except (ValueError, IndexError):
-            num = self.conn.execute('SELECT COUNT(*) FROM contratos').fetchone()[0] + 1
-        return f'CTT-N-{num:03d}'
+        rows = self.conn.execute("SELECT ctt_n FROM contratos").fetchall()
+        max_num = 0
+        for row in rows:
+            try:
+                num = int(row['ctt_n'].split('-')[-1])
+                if num > max_num:
+                    max_num = num
+            except (ValueError, IndexError):
+                continue
+        return f'CTT-N-{max_num + 1:03d}'
 
     def insert_contrato(self, cliente_id, ctt_n, descricao, tipo, advogado, obs,
                         data_assinatura='', status='Ativo', arquivo_path=''):
