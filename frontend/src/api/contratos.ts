@@ -11,7 +11,7 @@ export const contratosApi = {
   },
   get: (id: number) => api.get<Contrato>(`/contratos/${id}`),
   create: (data: Omit<Contrato, 'id' | 'created_at' | 'cliente_nome'>) => api.post<Contrato>('/contratos', data),
-  update: (id: number, data: { descricao: string; tipo: string; advogado: string; observacoes: string; data_assinatura: string; status: string; arquivo_path: string }) =>
+  update: (id: number, data: { ctt_n: string; descricao: string; tipo: string; advogado: string; observacoes: string; data_assinatura: string; status: string; arquivo_path: string }) =>
     api.put<Contrato>(`/contratos/${id}`, data),
   remove: (id: number) => api.del<{ ok: boolean }>(`/contratos/${id}`),
   nextCttN: () => api.get<{ ctt_n: string }>('/contratos/next-ctt-n'),
@@ -19,7 +19,6 @@ export const contratosApi = {
   setClientes: (id: number, cliente_ids: number[]) => api.put<{ ok: boolean }>(`/contratos/${id}/clientes`, { cliente_ids }),
   uploadPdf: (id: number, file: File) => api.upload<{ arquivo_path: string }>(`/contratos/${id}/pdf`, file),
   removePdf: (id: number) => api.del<{ ok: boolean }>(`/contratos/${id}/pdf`),
-  updateCttN: (id: number, ctt_n: string) => api.put<Contrato>(`/contratos/${id}/ctt-n`, { ctt_n }),
   getAdvogados: (id: number) => api.get<string[]>(`/contratos/${id}/advogados`),
   setAdvogados: (id: number, nomes: string[]) => api.put<{ ok: boolean }>(`/contratos/${id}/advogados`, { nomes }),
 }

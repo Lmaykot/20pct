@@ -168,30 +168,30 @@ export function CadastroContrato() {
     try {
       let contratoId = selectedId
 
-      // Rename CTT-N if changed on existing contract
-      if (selectedId && form.ctt_n !== originalCttN) {
+      if (selectedId) {
         try {
-          const renamed = await contratosApi.updateCttN(selectedId, form.ctt_n)
-          setOriginalCttN(form.ctt_n)
-          setForm(prev => ({ ...prev, arquivo_path: renamed.arquivo_path }))
+          const updated = await contratosApi.update(selectedId, {
+            ctt_n: form.ctt_n,
+            descricao: form.descricao, tipo: form.tipo,
+            advogado: advogados.join(', '),
+            observacoes: form.observacoes, data_assinatura: form.data_assinatura,
+            status: form.status, arquivo_path: form.arquivo_path,
+          })
+          if (form.ctt_n !== originalCttN) {
+            setOriginalCttN(updated.ctt_n)
+            setForm(prev => ({ ...prev, arquivo_path: updated.arquivo_path }))
+          }
         } catch (err) {
           const msg = err instanceof Error ? err.message : String(err)
           if (msg.includes('409')) {
             setCttNError(`Número "${form.ctt_n}" já está em uso`)
+          } else if (msg.includes('500') && form.ctt_n !== originalCttN) {
+            setCttNError('Erro ao renomear o arquivo PDF do contrato')
           } else {
-            setCttNError('Erro ao renomear o contrato')
+            setCttNError('Erro ao salvar o contrato')
           }
           return
         }
-      }
-
-      if (selectedId) {
-        await contratosApi.update(selectedId, {
-          descricao: form.descricao, tipo: form.tipo,
-          advogado: advogados.join(', '),
-          observacoes: form.observacoes, data_assinatura: form.data_assinatura,
-          status: form.status, arquivo_path: form.arquivo_path,
-        })
       } else {
         const created = await contratosApi.create({
           cliente_id: clienteId,

@@ -7,7 +7,7 @@ from app.dependencies import get_db
 from app.models import (
     ContratoCreate, ContratoUpdate, ContratoResponse,
     ContratoClientesPayload, ClienteResponse,
-    CttNUpdatePayload, ContratoAdvogadosPayload,
+    ContratoAdvogadosPayload,
 )
 
 router = APIRouter(prefix="/api/contratos", tags=["contratos"])
@@ -56,11 +56,38 @@ def create_contrato(data: ContratoCreate, db: Database = Depends(get_db)):
 
 @router.put("/{contrato_id}", response_model=ContratoResponse)
 def update_contrato(contrato_id: int, data: ContratoUpdate, db: Database = Depends(get_db)):
-    if not db.get_contrato(contrato_id):
+    contrato = db.get_contrato(contrato_id)
+    if not contrato:
         raise HTTPException(404, "Contrato not found")
+
+    new_ctt_n = data.ctt_n.strip()
+    arquivo_path = data.arquivo_path
+
+    # Se o número do contrato mudou, atualiza e renomeia o PDF
+    if new_ctt_n and new_ctt_n != contrato['ctt_n']:
+        try:
+            db.update_ctt_n(contrato_id, new_ctt_n)
+        except Exception as e:
+            if 'UNIQUE' in str(e):
+                raise HTTPException(409, f"Número de contrato '{new_ctt_n}' já está em uso")
+            raise
+
+        if contrato['arquivo_path']:
+            old_filepath = os.path.join(CONTRATOS_DIR, contrato['arquivo_path'])
+            new_filename = f"{new_ctt_n} - {contrato['cliente_nome']}.pdf"
+            new_filepath = os.path.join(CONTRATOS_DIR, new_filename)
+            if os.path.exists(old_filepath):
+                try:
+                    os.replace(old_filepath, new_filepath)
+                    arquivo_path = new_filename
+                except OSError as e:
+                    raise HTTPException(500, f"Erro ao renomear arquivo do contrato: {e}")
+            else:
+                arquivo_path = new_filename
+
     db.update_contrato(
         contrato_id, data.descricao, data.tipo, data.advogado,
-        data.observacoes, data.data_assinatura, data.status, data.arquivo_path
+        data.observacoes, data.data_assinatura, data.status, arquivo_path
     )
     return _row_to_dict(db.get_contrato(contrato_id))
 
@@ -79,41 +106,6 @@ def delete_contrato(contrato_id: int, db: Database = Depends(get_db)):
                 pass
     db.delete_contrato(contrato_id)
     return {"ok": True}
-
-
-# -- Edit CTT-N --
-
-@router.put("/{contrato_id}/ctt-n", response_model=ContratoResponse)
-def update_ctt_n(contrato_id: int, data: CttNUpdatePayload, db: Database = Depends(get_db)):
-    new_ctt_n = data.ctt_n.strip()
-    if not new_ctt_n:
-        raise HTTPException(400, "CTT-N não pode ser vazio")
-    contrato = db.get_contrato(contrato_id)
-    if not contrato:
-        raise HTTPException(404, "Contrato not found")
-    if contrato['ctt_n'] == new_ctt_n:
-        return _row_to_dict(contrato)
-    try:
-        db.update_ctt_n(contrato_id, new_ctt_n)
-    except Exception as e:
-        if 'UNIQUE' in str(e):
-            raise HTTPException(409, f"Número de contrato '{new_ctt_n}' já está em uso")
-        raise
-    if contrato['arquivo_path']:
-        old_filepath = os.path.join(CONTRATOS_DIR, contrato['arquivo_path'])
-        new_filename = contrato['arquivo_path'].replace(contrato['ctt_n'], new_ctt_n, 1)
-        new_filepath = os.path.join(CONTRATOS_DIR, new_filename)
-        if os.path.exists(old_filepath):
-            try:
-                os.rename(old_filepath, new_filepath)
-                db.update_contrato(
-                    contrato_id, contrato['descricao'], contrato['tipo'],
-                    contrato['advogado'], contrato['observacoes'],
-                    contrato['data_assinatura'], contrato['status'], new_filename
-                )
-            except OSError:
-                pass
-    return _row_to_dict(db.get_contrato(contrato_id))
 
 
 # -- Advogados --

@@ -39,6 +39,7 @@ class ContratoCreate(BaseModel):
 
 
 class ContratoUpdate(BaseModel):
+    ctt_n: str = ''
     descricao: str = ''
     tipo: str = ''
     advogado: str = ''
@@ -61,9 +62,6 @@ class ContratoClientesPayload(BaseModel):
 
 
 # -- Contrato Advogados --
-
-class CttNUpdatePayload(BaseModel):
-    ctt_n: str
 
 class ContratoAdvogadosPayload(BaseModel):
     nomes: list[str]
