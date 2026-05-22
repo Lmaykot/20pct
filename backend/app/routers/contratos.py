@@ -7,6 +7,7 @@ from app.dependencies import get_db
 from app.models import (
     ContratoCreate, ContratoUpdate, ContratoResponse,
     ContratoClientesPayload, ClienteResponse,
+    CttNUpdatePayload, ContratoAdvogadosPayload,
 )
 
 router = APIRouter(prefix="/api/contratos", tags=["contratos"])
@@ -77,6 +78,54 @@ def delete_contrato(contrato_id: int, db: Database = Depends(get_db)):
             except OSError:
                 pass
     db.delete_contrato(contrato_id)
+    return {"ok": True}
+
+
+# -- Edit CTT-N --
+
+@router.put("/{contrato_id}/ctt-n", response_model=ContratoResponse)
+def update_ctt_n(contrato_id: int, data: CttNUpdatePayload, db: Database = Depends(get_db)):
+    new_ctt_n = data.ctt_n.strip()
+    if not new_ctt_n:
+        raise HTTPException(400, "CTT-N não pode ser vazio")
+    contrato = db.get_contrato(contrato_id)
+    if not contrato:
+        raise HTTPException(404, "Contrato not found")
+    if contrato['ctt_n'] == new_ctt_n:
+        return _row_to_dict(contrato)
+    try:
+        db.update_ctt_n(contrato_id, new_ctt_n)
+    except Exception as e:
+        if 'UNIQUE' in str(e):
+            raise HTTPException(409, f"Número de contrato '{new_ctt_n}' já está em uso")
+        raise
+    if contrato['arquivo_path']:
+        old_filepath = os.path.join(CONTRATOS_DIR, contrato['arquivo_path'])
+        new_filename = contrato['arquivo_path'].replace(contrato['ctt_n'], new_ctt_n, 1)
+        new_filepath = os.path.join(CONTRATOS_DIR, new_filename)
+        if os.path.exists(old_filepath):
+            try:
+                os.rename(old_filepath, new_filepath)
+                db.update_contrato(
+                    contrato_id, contrato['descricao'], contrato['tipo'],
+                    contrato['advogado'], contrato['observacoes'],
+                    contrato['data_assinatura'], contrato['status'], new_filename
+                )
+            except OSError:
+                pass
+    return _row_to_dict(db.get_contrato(contrato_id))
+
+
+# -- Advogados --
+
+@router.get("/{contrato_id}/advogados")
+def get_contrato_advogados(contrato_id: int, db: Database = Depends(get_db)):
+    return db.get_advogados_by_contrato(contrato_id)
+
+
+@router.put("/{contrato_id}/advogados")
+def set_contrato_advogados(contrato_id: int, data: ContratoAdvogadosPayload, db: Database = Depends(get_db)):
+    db.set_advogados_contrato(contrato_id, data.nomes)
     return {"ok": True}
 
 

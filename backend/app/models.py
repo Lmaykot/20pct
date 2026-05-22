@@ -12,6 +12,7 @@ class ClienteCreate(BaseModel):
     logradouro: str = ''
     numero: str = ''
     complemento: str = ''
+    bairro: str = ''
     cidade: str = ''
     estado: str = ''
     nome_representante: str = ''
@@ -57,6 +58,15 @@ class ContratoResponse(ContratoCreate):
 
 class ContratoClientesPayload(BaseModel):
     cliente_ids: list[int]
+
+
+# -- Contrato Advogados --
+
+class CttNUpdatePayload(BaseModel):
+    ctt_n: str
+
+class ContratoAdvogadosPayload(BaseModel):
+    nomes: list[str]
 
 
 # -- Honorarios --

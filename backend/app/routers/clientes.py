@@ -29,7 +29,7 @@ def create_cliente(data: ClienteCreate, db: Database = Depends(get_db)):
     cid = db.insert_cliente(
         data.nome, data.cpf_cnpj, data.telefone, data.email,
         data.cep, data.logradouro, data.numero, data.complemento,
-        data.cidade, data.estado, data.nome_representante, data.observacoes
+        data.bairro, data.cidade, data.estado, data.nome_representante, data.observacoes
     )
     return _row_to_dict(db.get_cliente(cid))
 
@@ -41,7 +41,7 @@ def update_cliente(cliente_id: int, data: ClienteCreate, db: Database = Depends(
     db.update_cliente(
         cliente_id, data.nome, data.cpf_cnpj, data.telefone, data.email,
         data.cep, data.logradouro, data.numero, data.complemento,
-        data.cidade, data.estado, data.nome_representante, data.observacoes
+        data.bairro, data.cidade, data.estado, data.nome_representante, data.observacoes
     )
     return _row_to_dict(db.get_cliente(cliente_id))
 

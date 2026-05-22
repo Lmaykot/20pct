@@ -82,14 +82,14 @@ def export_db_xlsx(db: Database = Depends(get_db)):
         ws = wb.active
         ws.title = "Clientes"
         headers = ["ID", "Nome", "CPF/CNPJ", "Telefone", "Email", "CEP", "Logradouro",
-                   "Número", "Complemento", "Cidade", "Estado", "Representante", "Observações"]
+                   "Número", "Complemento", "Bairro", "Cidade", "Estado", "Representante", "Observações"]
         ws.append(headers)
         style_header(ws, 1, len(headers))
         for c in clientes:
             ws.append([
                 c["id"], c["nome"], c["cpf_cnpj"], c["telefone"], c["email"],
                 c["cep"], c["logradouro"], c["numero"], c["complemento"],
-                c["cidade"], c["estado"], c["nome_representante"], c["observacoes"]
+                c.get("bairro", ""), c["cidade"], c["estado"], c["nome_representante"], c["observacoes"]
             ])
         auto_width(ws)
 

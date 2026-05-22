@@ -39,7 +39,7 @@ const ESTADOS = [
 
 const EMPTY: Omit<Cliente, 'id' | 'created_at'> = {
   nome: '', cpf_cnpj: '', telefone: '', email: '',
-  cep: '', logradouro: '', numero: '', complemento: '', cidade: '', estado: '',
+  cep: '', logradouro: '', numero: '', complemento: '', bairro: '', cidade: '', estado: '',
   nome_representante: '', observacoes: '',
 }
 
@@ -84,6 +84,7 @@ export function CadastroCliente() {
         setForm(prev => ({
           ...prev,
           logradouro: data.logradouro || prev.logradouro,
+          bairro: data.bairro || prev.bairro,
           cidade: data.localidade || prev.cidade,
           estado: data.uf || prev.estado,
         }))
@@ -101,8 +102,8 @@ export function CadastroCliente() {
     setForm({
       nome: full.nome, cpf_cnpj: full.cpf_cnpj, telefone: full.telefone,
       email: full.email, cep: full.cep, logradouro: full.logradouro,
-      numero: full.numero, complemento: full.complemento, cidade: full.cidade,
-      estado: full.estado, nome_representante: full.nome_representante,
+      numero: full.numero, complemento: full.complemento, bairro: full.bairro,
+      cidade: full.cidade, estado: full.estado, nome_representante: full.nome_representante,
       observacoes: full.observacoes,
     })
   }
@@ -213,6 +214,7 @@ export function CadastroCliente() {
               <div className={styles.fullWidth}>{field('logradouro', 'Logradouro')}</div>
               {field('numero', 'Numero')}
               {field('complemento', 'Complemento')}
+              <div className={styles.fullWidth}>{field('bairro', 'Bairro')}</div>
               <Select
                 label="Estado"
                 value={form.estado}

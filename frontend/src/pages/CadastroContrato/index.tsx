@@ -10,7 +10,7 @@ import { useDebounce } from '../../hooks/useDebounce'
 import styles from './CadastroContrato.module.css'
 
 const EMPTY_FORM = {
-  ctt_n: '', descricao: '', tipo: 'Contencioso', advogado: '',
+  ctt_n: '', descricao: '', tipo: 'Contencioso',
   observacoes: '', data_assinatura: '', status: 'Ativo', arquivo_path: '',
 }
 
@@ -20,6 +20,8 @@ export function CadastroContrato() {
   const debouncedSearch = useDebounce(search)
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [form, setForm] = useState(EMPTY_FORM)
+  const [originalCttN, setOriginalCttN] = useState('')
+  const [editingCttN, setEditingCttN] = useState(false)
   const [clienteId, setClienteId] = useState<number | null>(null)
   const [clienteNome, setClienteNome] = useState('')
   const [clienteResults, setClienteResults] = useState<Cliente[]>([])
@@ -28,8 +30,11 @@ export function CadastroContrato() {
   const [extraSearch, setExtraSearch] = useState('')
   const [extraResults, setExtraResults] = useState<Cliente[]>([])
   const [showExtraDropdown, setShowExtraDropdown] = useState(false)
+  const [advogados, setAdvogados] = useState<string[]>([])
+  const [advogadoInput, setAdvogadoInput] = useState('')
   const [saving, setSaving] = useState(false)
   const [pdfError, setPdfError] = useState('')
+  const [cttNError, setCttNError] = useState('')
   const [honorariosOpen, setHonorariosOpen] = useState(false)
   const [honorariosContratoId, setHonorariosContratoId] = useState<number | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -46,31 +51,47 @@ export function CadastroContrato() {
     const full = await contratosApi.get(c.id)
     setForm({
       ctt_n: full.ctt_n, descricao: full.descricao, tipo: full.tipo,
-      advogado: full.advogado, observacoes: full.observacoes,
+      observacoes: full.observacoes,
       data_assinatura: full.data_assinatura, status: full.status,
       arquivo_path: full.arquivo_path,
     })
+    setOriginalCttN(full.ctt_n)
+    setEditingCttN(false)
+    setCttNError('')
     setClienteId(full.cliente_id)
     setClienteNome(full.cliente_nome)
     const extras = await contratosApi.getClientes(c.id)
     setExtraClientes(extras)
+    const advs = await contratosApi.getAdvogados(c.id)
+    setAdvogados(advs)
+    setAdvogadoInput('')
   }
 
   const handleNew = async () => {
     setSelectedId(null)
     const { ctt_n } = await contratosApi.nextCttN()
     setForm({ ...EMPTY_FORM, ctt_n })
+    setOriginalCttN('')
+    setEditingCttN(false)
+    setCttNError('')
     setClienteId(null)
     setClienteNome('')
     setExtraClientes([])
+    setAdvogados([])
+    setAdvogadoInput('')
   }
 
   const handleCancel = () => {
     setSelectedId(null)
     setForm(EMPTY_FORM)
+    setOriginalCttN('')
+    setEditingCttN(false)
+    setCttNError('')
     setClienteId(null)
     setClienteNome('')
     setExtraClientes([])
+    setAdvogados([])
+    setAdvogadoInput('')
   }
 
   const handleDelete = async () => {
@@ -80,9 +101,14 @@ export function CadastroContrato() {
       await contratosApi.remove(selectedId)
       setSelectedId(null)
       setForm(EMPTY_FORM)
+      setOriginalCttN('')
+      setEditingCttN(false)
+      setCttNError('')
       setClienteId(null)
       setClienteNome('')
       setExtraClientes([])
+      setAdvogados([])
+      setAdvogadoInput('')
       await loadList()
     } catch (err) {
       alert(`Erro ao remover: ${err instanceof Error ? err.message : String(err)}`)
@@ -124,27 +150,69 @@ export function CadastroContrato() {
     setExtraClientes(prev => prev.filter(c => c.id !== id))
   }
 
+  const addAdvogado = () => {
+    const nome = advogadoInput.trim()
+    if (!nome || advogados.includes(nome)) return
+    setAdvogados(prev => [...prev, nome])
+    setAdvogadoInput('')
+  }
+
+  const removeAdvogado = (index: number) => {
+    setAdvogados(prev => prev.filter((_, i) => i !== index))
+  }
+
   const handleSave = async (advance = false) => {
     if (!form.ctt_n.trim() || !clienteId) return
     setSaving(true)
+    setCttNError('')
     try {
       let contratoId = selectedId
+
+      // Rename CTT-N if changed on existing contract
+      if (selectedId && form.ctt_n !== originalCttN) {
+        try {
+          const renamed = await contratosApi.updateCttN(selectedId, form.ctt_n)
+          setOriginalCttN(form.ctt_n)
+          setForm(prev => ({ ...prev, arquivo_path: renamed.arquivo_path }))
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err)
+          if (msg.includes('409')) {
+            setCttNError(`Número "${form.ctt_n}" já está em uso`)
+          } else {
+            setCttNError('Erro ao renomear o contrato')
+          }
+          return
+        }
+      }
+
       if (selectedId) {
         await contratosApi.update(selectedId, {
-          descricao: form.descricao, tipo: form.tipo, advogado: form.advogado,
+          descricao: form.descricao, tipo: form.tipo,
+          advogado: advogados.join(', '),
           observacoes: form.observacoes, data_assinatura: form.data_assinatura,
           status: form.status, arquivo_path: form.arquivo_path,
         })
       } else {
         const created = await contratosApi.create({
-          cliente_id: clienteId, ...form,
+          cliente_id: clienteId,
+          ctt_n: form.ctt_n,
+          descricao: form.descricao,
+          tipo: form.tipo,
+          advogado: advogados.join(', '),
+          observacoes: form.observacoes,
+          data_assinatura: form.data_assinatura,
+          status: form.status,
+          arquivo_path: form.arquivo_path,
         })
         contratoId = created.id
         setSelectedId(created.id)
+        setOriginalCttN(created.ctt_n)
       }
       if (contratoId) {
         await contratosApi.setClientes(contratoId, extraClientes.map(c => c.id))
+        await contratosApi.setAdvogados(contratoId, advogados)
       }
+      setEditingCttN(false)
       await loadList()
       if (advance && contratoId) {
         setHonorariosContratoId(contratoId)
@@ -162,7 +230,7 @@ export function CadastroContrato() {
     try {
       const result = await contratosApi.uploadPdf(selectedId, file)
       setForm(prev => ({ ...prev, arquivo_path: result.arquivo_path }))
-    } catch (err) {
+    } catch {
       setPdfError('Erro ao fazer upload do PDF. Tente novamente.')
     } finally {
       e.target.value = ''
@@ -218,7 +286,40 @@ export function CadastroContrato() {
           <div className={styles.section}>
             <SectionHeader text="Dados do Contrato" />
             <div className={styles.formGrid}>
-              <Input label="CTT-N" value={form.ctt_n} readOnly />
+              <div>
+                <div className={styles.cttRow}>
+                  <Input
+                    label="CTT-N"
+                    value={form.ctt_n}
+                    readOnly={!selectedId || !editingCttN}
+                    onChange={e => setForm(prev => ({ ...prev, ctt_n: e.target.value }))}
+                  />
+                  {selectedId && (
+                    editingCttN ? (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => {
+                          setForm(prev => ({ ...prev, ctt_n: originalCttN }))
+                          setEditingCttN(false)
+                          setCttNError('')
+                        }}
+                      >
+                        Cancelar
+                      </Button>
+                    ) : (
+                      <Button size="sm" variant="ghost" onClick={() => setEditingCttN(true)}>
+                        Editar
+                      </Button>
+                    )
+                  )}
+                </div>
+                {cttNError && (
+                  <div style={{ color: 'var(--color-danger, red)', fontSize: 'var(--text-xs)', marginTop: 'var(--space-1)' }}>
+                    {cttNError}
+                  </div>
+                )}
+              </div>
               <Input
                 label="Data de Assinatura"
                 type="date"
@@ -304,12 +405,30 @@ export function CadastroContrato() {
           </div>
 
           <div className={styles.section}>
-            <SectionHeader text="Advogado" />
-            <Input
-              value={form.advogado}
-              onChange={e => setForm(prev => ({ ...prev, advogado: e.target.value }))}
-              placeholder="Nome do advogado responsável"
-            />
+            <SectionHeader text="Advogados" />
+            <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'flex-end' }}>
+              <div style={{ flex: 1 }}>
+                <Input
+                  value={advogadoInput}
+                  onChange={e => setAdvogadoInput(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') { addAdvogado(); e.preventDefault() } }}
+                  placeholder="Nome do advogado"
+                />
+              </div>
+              <Button size="sm" variant="secondary" onClick={addAdvogado} disabled={!advogadoInput.trim()}>
+                Adicionar
+              </Button>
+            </div>
+            {advogados.length > 0 && (
+              <div className={styles.chipList}>
+                {advogados.map((nome, i) => (
+                  <span key={i} className={styles.extraChip}>
+                    {nome}
+                    <span className={styles.extraChipRemove} onClick={() => removeAdvogado(i)}>&times;</span>
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className={styles.section}>

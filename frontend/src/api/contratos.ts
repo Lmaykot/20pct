@@ -19,4 +19,7 @@ export const contratosApi = {
   setClientes: (id: number, cliente_ids: number[]) => api.put<{ ok: boolean }>(`/contratos/${id}/clientes`, { cliente_ids }),
   uploadPdf: (id: number, file: File) => api.upload<{ arquivo_path: string }>(`/contratos/${id}/pdf`, file),
   removePdf: (id: number) => api.del<{ ok: boolean }>(`/contratos/${id}/pdf`),
+  updateCttN: (id: number, ctt_n: string) => api.put<Contrato>(`/contratos/${id}/ctt-n`, { ctt_n }),
+  getAdvogados: (id: number) => api.get<string[]>(`/contratos/${id}/advogados`),
+  setAdvogados: (id: number, nomes: string[]) => api.put<{ ok: boolean }>(`/contratos/${id}/advogados`, { nomes }),
 }

@@ -26,6 +26,7 @@ class Database:
                 logradouro TEXT DEFAULT '',
                 numero TEXT DEFAULT '',
                 complemento TEXT DEFAULT '',
+                bairro TEXT DEFAULT '',
                 cidade TEXT DEFAULT '',
                 estado TEXT DEFAULT '',
                 nome_representante TEXT DEFAULT '',
@@ -55,6 +56,14 @@ class Database:
                 ordem INTEGER DEFAULT 0,
                 FOREIGN KEY (contrato_id) REFERENCES contratos(id),
                 FOREIGN KEY (cliente_id) REFERENCES clientes(id)
+            );
+
+            CREATE TABLE IF NOT EXISTS contrato_advogados (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                contrato_id INTEGER NOT NULL,
+                nome TEXT NOT NULL,
+                ordem INTEGER DEFAULT 0,
+                FOREIGN KEY (contrato_id) REFERENCES contratos(id)
             );
 
             CREATE TABLE IF NOT EXISTS honorarios (
@@ -87,11 +96,14 @@ class Database:
             "ALTER TABLE clientes ADD COLUMN logradouro TEXT DEFAULT ''",
             "ALTER TABLE clientes ADD COLUMN numero TEXT DEFAULT ''",
             "ALTER TABLE clientes ADD COLUMN complemento TEXT DEFAULT ''",
+            "ALTER TABLE clientes ADD COLUMN bairro TEXT DEFAULT ''",
             "ALTER TABLE clientes ADD COLUMN cidade TEXT DEFAULT ''",
             "ALTER TABLE clientes ADD COLUMN estado TEXT DEFAULT ''",
             "ALTER TABLE contratos ADD COLUMN data_assinatura TEXT DEFAULT ''",
             "ALTER TABLE contratos ADD COLUMN status TEXT DEFAULT 'Ativo'",
             "ALTER TABLE contratos ADD COLUMN arquivo_path TEXT DEFAULT ''",
+            "CREATE TABLE IF NOT EXISTS contrato_advogados (id INTEGER PRIMARY KEY AUTOINCREMENT, contrato_id INTEGER NOT NULL, nome TEXT NOT NULL, ordem INTEGER DEFAULT 0, FOREIGN KEY (contrato_id) REFERENCES contratos(id))",
+            "INSERT INTO contrato_advogados (contrato_id, nome, ordem) SELECT id, advogado, 0 FROM contratos WHERE advogado != '' AND id NOT IN (SELECT DISTINCT contrato_id FROM contrato_advogados)",
         ]
         for sql in migrations:
             try:
@@ -103,31 +115,31 @@ class Database:
     # -- Clientes --
 
     def insert_cliente(self, nome, cpf_cnpj, telefone, email,
-                       cep, logradouro, numero, complemento, cidade, estado,
+                       cep, logradouro, numero, complemento, bairro, cidade, estado,
                        nome_repr, obs):
         cur = self.conn.execute(
             '''INSERT INTO clientes
-               (nome,cpf_cnpj,telefone,email,cep,logradouro,numero,complemento,cidade,estado,
+               (nome,cpf_cnpj,telefone,email,cep,logradouro,numero,complemento,bairro,cidade,estado,
                 nome_representante,observacoes)
-               VALUES (?,?,?,?,?,?,?,?,?,?,?,?)''',
+               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)''',
             (nome, cpf_cnpj, telefone, email,
-             cep, logradouro, numero, complemento, cidade, estado,
+             cep, logradouro, numero, complemento, bairro, cidade, estado,
              nome_repr, obs)
         )
         self.conn.commit()
         return cur.lastrowid
 
     def update_cliente(self, cid, nome, cpf_cnpj, telefone, email,
-                       cep, logradouro, numero, complemento, cidade, estado,
+                       cep, logradouro, numero, complemento, bairro, cidade, estado,
                        nome_repr, obs):
         self.conn.execute(
             '''UPDATE clientes SET
                nome=?,cpf_cnpj=?,telefone=?,email=?,cep=?,logradouro=?,
-               numero=?,complemento=?,cidade=?,estado=?,
+               numero=?,complemento=?,bairro=?,cidade=?,estado=?,
                nome_representante=?,observacoes=?
                WHERE id=?''',
             (nome, cpf_cnpj, telefone, email,
-             cep, logradouro, numero, complemento, cidade, estado,
+             cep, logradouro, numero, complemento, bairro, cidade, estado,
              nome_repr, obs, cid)
         )
         self.conn.commit()
@@ -247,6 +259,27 @@ class Database:
         return self.conn.execute(
             'SELECT * FROM contratos WHERE cliente_id=? ORDER BY ctt_n', (cliente_id,)
         ).fetchall()
+
+    def update_ctt_n(self, contrato_id, new_ctt_n):
+        self.conn.execute('UPDATE contratos SET ctt_n=? WHERE id=?', (new_ctt_n, contrato_id))
+        self.conn.commit()
+
+    # -- Contrato <-> Advogados --
+
+    def get_advogados_by_contrato(self, contrato_id):
+        rows = self.conn.execute(
+            'SELECT nome FROM contrato_advogados WHERE contrato_id=? ORDER BY ordem', (contrato_id,)
+        ).fetchall()
+        return [r['nome'] for r in rows]
+
+    def set_advogados_contrato(self, contrato_id, nomes):
+        self.conn.execute('DELETE FROM contrato_advogados WHERE contrato_id=?', (contrato_id,))
+        for ordem, nome in enumerate(nomes):
+            self.conn.execute(
+                'INSERT INTO contrato_advogados (contrato_id, nome, ordem) VALUES (?,?,?)',
+                (contrato_id, nome, ordem)
+            )
+        self.conn.commit()
 
     # -- Contrato <-> Clientes --
 
