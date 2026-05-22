@@ -232,7 +232,8 @@ class Database:
         return self.conn.execute('''
             SELECT c.*, cl.nome AS cliente_nome
             FROM contratos c JOIN clientes cl ON c.cliente_id=cl.id
-            WHERE cl.nome LIKE ? ORDER BY c.ctt_n
+            WHERE cl.nome LIKE ?
+            ORDER BY CAST(SUBSTR(c.ctt_n, 7) AS INTEGER) DESC, c.ctt_n DESC
         ''', (f'%{nome}%',)).fetchall()
 
     def search_contrato_by_numero(self, numero):
@@ -240,7 +241,8 @@ class Database:
         return self.conn.execute('''
             SELECT c.*, cl.nome AS cliente_nome
             FROM contratos c JOIN clientes cl ON c.cliente_id=cl.id
-            WHERE c.ctt_n LIKE ? OR c.ctt_n LIKE ? ORDER BY c.ctt_n
+            WHERE c.ctt_n LIKE ? OR c.ctt_n LIKE ?
+            ORDER BY CAST(SUBSTR(c.ctt_n, 7) AS INTEGER) DESC, c.ctt_n DESC
         ''', (f'%{numero}%', f'CTT-N-{padded}%')).fetchall()
 
     def search_contratos_com_honorarios(self, query):
