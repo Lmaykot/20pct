@@ -1,62 +1,191 @@
-.page {
-  display: grid;
-  grid-template-columns: 340px 1fr;
-  gap: var(--space-6);
-  height: calc(100vh - 6rem);
+.erro {
+  background: var(--redBg);
+  border: 1px solid var(--redBd);
+  color: var(--red);
+  border-radius: var(--r-ctl);
+  padding: 10px 14px;
+  font-size: var(--fs-sm2);
 }
 
-.listPanel {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  min-height: 0;
-}
+/* --- Seletor de cliente (a busca fica no header do app) --- */
 
-.listHeader {
+.seletor {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-.listScroll {
-  flex: 1;
-  overflow-y: auto;
-  border-radius: var(--radius-xl);
+.seletorLabel {
+  font-size: var(--fs-sm);
+  color: var(--muted2);
+  white-space: nowrap;
 }
 
-.formPanel {
-  overflow-y: auto;
-  padding-right: var(--space-2);
-}
-
-.formGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-4);
-}
-
-.fullWidth {
-  grid-column: 1 / -1;
-}
-
-.section {
-  margin-bottom: var(--space-6);
-}
-
-.actions {
+.chips {
   display: flex;
-  justify-content: flex-end;
-  gap: var(--space-3);
-  margin-top: var(--space-6);
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--color-outline-variant);
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
 }
 
-.pageTitle {
-  font-family: var(--font-heading);
-  font-size: var(--text-2xl);
-  font-weight: 700;
-  color: var(--color-on-surface);
-  margin-bottom: var(--space-6);
+.chip {
+  height: var(--h-sm);
+  padding: 0 12px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--bd);
+  background: var(--panel);
+  color: var(--ink2);
+  font-size: var(--fs-sm2);
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: border-color var(--t-fast), background var(--t-fast), color var(--t-fast);
+}
+
+.chip:hover { border-color: var(--acc); }
+
+.chipOn {
+  border-color: var(--acc);
+  background: var(--acc);
+  color: var(--onacc);
+}
+
+.chipMais {
+  font-size: var(--fs-sm);
+  color: var(--muted2);
+}
+
+/* --- Duas colunas: ficha e posição --- */
+
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 18px;
+  align-items: start;
+}
+
+@media (max-width: 1080px) {
+  .split { grid-template-columns: minmax(0, 1fr); }
+}
+
+.coluna {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.bloco {
+  background: var(--panel);
+  border: 1px solid var(--bd);
+  border-radius: var(--r-card);
+  padding: 20px 22px;
+}
+
+.blocoTopo {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.blocoTitulo {
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-semibold);
+  margin: 0;
+}
+
+.blocoNota {
+  font-size: var(--fs-xs2);
+  color: var(--muted2);
+}
+
+.gridIdentificacao {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px 16px;
+}
+
+.gridEndereco {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 2fr) 90px;
+  gap: 14px 16px;
+}
+
+@media (max-width: 640px) {
+  .gridEndereco { grid-template-columns: minmax(0, 1fr); }
+}
+
+.logradouro { min-width: 0; }
+.span2 { grid-column: 1 / -1; }
+
+.acoes {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.acoesEspaco { flex: 1; }
+
+/* --- Coluna lateral --- */
+
+.lateral {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: sticky;
+  top: calc(var(--header-height) + 28px);
+}
+
+@media (max-width: 1080px) {
+  .lateral { position: static; }
+}
+
+.cartao {
+  background: var(--panel);
+  border: 1px solid var(--bd);
+  border-radius: var(--r-card);
+  padding: 17px 18px;
+}
+
+.cartaoLabel {
+  font-size: var(--fs-micro2);
+  letter-spacing: var(--ls-micro2);
+  text-transform: uppercase;
+  color: var(--muted2);
+}
+
+.linhas {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  margin-top: 13px;
+}
+
+.linha {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: var(--fs-base);
+}
+
+.linhaChave { color: var(--muted); }
+
+.linhaValor {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.ambar { color: var(--amb); }
+
+.historicoVazio {
+  margin-top: 13px;
+  font-size: var(--fs-sm2);
+  color: var(--muted);
+  line-height: 1.5;
 }

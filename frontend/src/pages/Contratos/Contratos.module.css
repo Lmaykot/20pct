@@ -1,0 +1,107 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.spacer { flex: 1; }
+
+.total {
+  font-size: var(--fs-sm);
+  color: var(--muted2);
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--bd);
+  border-radius: var(--r-card);
+  overflow: hidden;
+}
+
+.tableWrap { overflow-x: auto; }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 860px;
+}
+
+.table thead tr { background: var(--thead); }
+
+.table th {
+  text-align: left;
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro);
+  text-transform: uppercase;
+  color: var(--muted2);
+  font-weight: var(--fw-medium);
+  padding: 10px 12px;
+  white-space: nowrap;
+}
+
+.table th:first-child { padding-left: 18px; }
+.table th:last-child { padding-right: 18px; }
+
+.table tbody tr {
+  border-top: 1px solid var(--hair);
+  cursor: pointer;
+  transition: background var(--t-fast);
+}
+
+.table tbody tr:hover { background: var(--thead); }
+
+.table td { padding: 13px 12px; }
+.table td:first-child { padding-left: 18px; }
+.table td:last-child { padding-right: 18px; }
+
+.ctt {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm2);
+  color: var(--acc);
+  white-space: nowrap;
+}
+
+.cliente {
+  font-size: var(--fs-base2);
+  font-weight: var(--fw-medium);
+}
+
+.muted {
+  font-size: var(--fs-sm2);
+  color: var(--muted);
+}
+
+.responsavel {
+  font-size: var(--fs-sm2);
+  color: var(--ink2);
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--fs-base);
+}
+
+.right { text-align: right; }
+
+.recebido { width: 130px; }
+
+.empty {
+  padding: 32px 18px;
+  text-align: center;
+  color: var(--muted);
+  font-size: var(--fs-base);
+}
+
+/* Falha de rede não pode parecer "não há registros". */
+.falha { color: var(--red); }
+
+/* Valor monetário nunca quebra em duas linhas. */
+.mono { white-space: nowrap; }

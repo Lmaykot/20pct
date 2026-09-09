@@ -1,33 +1,14 @@
 .chip {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-full);
-  font-size: var(--text-xs);
-  font-weight: 600;
-  letter-spacing: 0.01em;
+  display: inline-block;
+  font-size: var(--fs-xs);
+  padding: 3px 9px;
+  border-radius: var(--r-chip);
   white-space: nowrap;
-  line-height: 1.5;
+  line-height: 1.45;
 }
 
-.ativo {
-  background: var(--color-status-ativo-bg);
-  color: var(--color-status-ativo-fg);
-}
-.encerrado {
-  background: var(--color-status-encerrado-bg);
-  color: var(--color-status-encerrado-fg);
-}
-.quitado {
-  background: var(--color-status-quitado-bg);
-  color: var(--color-status-quitado-fg);
-}
-.pendente {
-  background: var(--color-status-pendente-bg);
-  color: var(--color-status-pendente-fg);
-}
-.default {
-  background: var(--color-surface-container-high);
-  color: var(--color-on-surface-variant);
-}
+.ok { background: var(--grnBg); color: var(--grn); }
+.accent { background: var(--accBg); color: var(--acc); }
+.warn { background: var(--ambBg); color: var(--amb); }
+.bad { background: var(--redBg); color: var(--red); }
+.inert { background: var(--hair2); color: var(--muted); }

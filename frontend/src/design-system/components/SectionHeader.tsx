@@ -1,17 +1,20 @@
+import { ReactNode } from 'react'
 import styles from './SectionHeader.module.css'
 
 interface SectionHeaderProps {
-  icon?: string
   text: string
-  showLine?: boolean
+  note?: ReactNode
+  action?: ReactNode
 }
 
-export function SectionHeader({ icon, text, showLine = true }: SectionHeaderProps) {
+/* Cabeçalho solto, fora de cartão — usado quando a seção não tem
+   moldura própria (grupos de exportação, blocos de formulário). */
+export function SectionHeader({ text, note, action }: SectionHeaderProps) {
   return (
     <div className={styles.header}>
-      {icon && <span className={styles.icon}>{icon}</span>}
-      <span className={styles.text}>{text}</span>
-      {showLine && <div className={styles.line} />}
+      <h2 className={styles.text}>{text}</h2>
+      {note && <span className={styles.note}>{note}</span>}
+      {action && <div className={styles.action}>{action}</div>}
     </div>
   )
 }

@@ -9,13 +9,16 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
 
 export function Select({ label, options, wrapperClassName = '', className = '', ...props }: SelectProps) {
   return (
-    <div className={`${styles.wrapper} ${wrapperClassName}`}>
-      {label && <label className={styles.label}>{label}</label>}
-      <select className={`${styles.select} ${className}`} {...props}>
-        {options.map(o => (
-          <option key={o.value} value={o.value}>{o.label}</option>
-        ))}
-      </select>
-    </div>
+    <label className={`${styles.wrapper} ${wrapperClassName}`}>
+      {label && <span className={styles.label}>{label}</span>}
+      <span className={styles.field}>
+        <select className={`${styles.select} ${className}`} {...props}>
+          {options.map(o => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
+        <span className={styles.chevron} aria-hidden="true" />
+      </span>
+    </label>
   )
 }

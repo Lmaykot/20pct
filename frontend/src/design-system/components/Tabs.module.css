@@ -1,0 +1,26 @@
+.bar {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--bd);
+}
+
+.tab {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: var(--fs-base2);
+  padding: 9px 14px 11px;
+  border-bottom: 2px solid transparent;
+  color: var(--muted);
+  font-weight: var(--fw-regular);
+  margin-bottom: -1px;
+  transition: color var(--t-fast), border-color var(--t-fast);
+}
+
+.tab:hover { color: var(--ink); }
+
+.on {
+  border-bottom-color: var(--acc);
+  color: var(--ink);
+  font-weight: var(--fw-semibold);
+}

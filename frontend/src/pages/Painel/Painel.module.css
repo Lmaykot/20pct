@@ -1,0 +1,118 @@
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+@media (max-width: 1080px) {
+  .split { grid-template-columns: minmax(0, 1fr); }
+}
+
+.link { font-size: var(--fs-sm); }
+
+/* --- Tabela da agenda --- */
+
+.tableWrap { overflow-x: auto; }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 520px;
+}
+
+.table thead tr { background: var(--thead); }
+
+.table th {
+  text-align: left;
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro);
+  text-transform: uppercase;
+  color: var(--muted2);
+  font-weight: var(--fw-medium);
+  padding: 9px 12px;
+  white-space: nowrap;
+}
+
+.table th:first-child { padding-left: 18px; }
+.table th:last-child { padding-right: 18px; }
+
+.table tbody tr { border-top: 1px solid var(--hair); }
+
+.table td {
+  padding: 12px;
+  font-size: var(--fs-base);
+}
+
+.table td:first-child { padding-left: 18px; }
+.table td:last-child { padding-right: 18px; }
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--fs-sm2);
+  color: var(--ink2);
+}
+
+.right { text-align: right; }
+.muted { color: var(--muted); font-size: var(--fs-sm2); }
+
+/* --- Exige atenção --- */
+
+.avisos {
+  display: flex;
+  flex-direction: column;
+}
+
+.aviso {
+  padding: 14px 18px;
+  border-top: 1px solid var(--hair);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.aviso:first-child { border-top: 0; }
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-top: 6px;
+  flex: none;
+}
+
+.avisoTexto { min-width: 0; }
+
+.avisoTitulo {
+  font-size: var(--fs-base);
+  font-weight: var(--fw-medium);
+}
+
+.avisoDetalhe {
+  font-size: var(--fs-sm);
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.empty {
+  padding: 24px 18px;
+  color: var(--muted);
+  font-size: var(--fs-base);
+  text-align: center;
+}
+
+.placeholder {
+  padding: 40px 0;
+  color: var(--muted);
+  font-size: var(--fs-base);
+}
+
+/* Valor monetário nunca quebra em duas linhas. */
+.mono { white-space: nowrap; }

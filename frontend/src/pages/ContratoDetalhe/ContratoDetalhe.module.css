@@ -1,0 +1,163 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.voltar { font-size: var(--fs-sm); }
+
+.tituloLinha {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.cliente {
+  font-size: var(--fs-3xl);
+  font-weight: var(--fw-semibold);
+  margin: 0;
+  letter-spacing: var(--ls-tight);
+}
+
+.meta {
+  font-size: var(--fs-sm2);
+  color: var(--muted);
+  margin-top: 6px;
+  font-family: var(--font-mono);
+}
+
+/* --- Bloco de totais --- */
+
+.totais {
+  display: flex;
+  gap: 22px;
+  background: var(--panel);
+  border: 1px solid var(--bd);
+  border-radius: var(--r-card);
+  padding: 16px 22px;
+}
+
+.divisor {
+  width: 1px;
+  background: var(--hair2);
+}
+
+.totalLabel {
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro2);
+  text-transform: uppercase;
+  color: var(--muted2);
+}
+
+.totalValor {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 18px;
+  margin-top: 5px;
+}
+
+.verde { color: var(--grn); }
+.ambar { color: var(--amb); }
+
+/* --- Ações e descrição --- */
+
+.acoes {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.pdfLink { font-size: var(--fs-sm2); }
+
+.descricao {
+  font-size: var(--fs-sm2);
+  color: var(--muted);
+  flex: 1 1 320px;
+  min-width: 0;
+}
+
+/* --- Tabelas de honorários --- */
+
+.tableWrap { overflow-x: auto; }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 640px;
+}
+
+.table thead tr { background: var(--thead); }
+
+.table th {
+  text-align: left;
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro);
+  text-transform: uppercase;
+  color: var(--muted2);
+  font-weight: var(--fw-medium);
+  padding: 8px 12px;
+  white-space: nowrap;
+}
+
+.table th:first-child { padding-left: 18px; }
+.table th:last-child { padding-right: 18px; }
+
+.table tbody tr { border-top: 1px solid var(--hair); }
+
+.table td { padding: 13px 12px; }
+.table td:first-child { padding-left: 18px; }
+.table td:last-child { padding-right: 18px; }
+
+.hipotese {
+  font-size: var(--fs-base2);
+  font-weight: var(--fw-medium);
+}
+
+.muted { font-size: var(--fs-sm2); color: var(--muted); }
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--fs-base);
+}
+
+.right { text-align: right; }
+
+.parcelamento {
+  font-size: var(--fs-sm2);
+  color: var(--ink2);
+}
+
+.quitacao {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gerir { font-size: var(--fs-sm); }
+
+.vazio {
+  color: var(--muted);
+  font-size: var(--fs-base);
+  line-height: 1.6;
+}
+
+.placeholder {
+  padding: 40px 0;
+  color: var(--muted);
+  font-size: var(--fs-base);
+}
+
+/* Valor monetário nunca quebra em duas linhas. */
+.mono { white-space: nowrap; }

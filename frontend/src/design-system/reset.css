@@ -11,11 +11,11 @@ html {
 }
 
 body {
-  font-family: var(--font-body);
-  font-size: 1rem;
+  font-family: var(--font-ui);
+  font-size: var(--fs-base);
   line-height: 1.5;
-  color: var(--color-on-surface);
-  background: var(--color-surface);
+  color: var(--ink);
+  background: var(--bg);
   min-height: 100vh;
 }
 
@@ -36,8 +36,12 @@ button {
 }
 
 a {
-  color: inherit;
+  color: var(--acc);
   text-decoration: none;
+}
+
+a:hover {
+  color: var(--accH);
 }
 
 ul, ol {
@@ -47,4 +51,27 @@ ul, ol {
 table {
   border-collapse: collapse;
   border-spacing: 0;
+}
+
+/* Faixas de rolagem discretas — o design é de superfícies planas,
+   uma barra cinza padrão do sistema destoa demais. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--bdStrong) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--bdStrong);
+  border-radius: var(--r-pill);
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
 }

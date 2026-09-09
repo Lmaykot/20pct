@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"><style>body{margin:0;background:var(--bg,#faf9f5);font-family:"Instrument Sans",system-ui,sans-serif;color:var(--ink,#14110f);-webkit-font-smoothing:antialiased}*{box-sizing:border-box}a{color:var(--acc,#964f4c);text-decoration:none}a:hover{color:var(--accH,#7a3e3c)}input,select,textarea,button{font-family:inherit}</style></helmet>
+<div style="display:grid;grid-template-columns:236px minmax(0,1fr);min-height:100vh;background:var(--bg,#faf9f5);color:var(--ink,#14110f);{{ temaVars }}">
+
+  <aside style="background:#14110f;color:#ece5da;display:flex;flex-direction:column;padding:0;border-right:1px solid #0d0b0a">
+    <div style="padding:30px 22px 24px;border-bottom:1px solid #2a2420;background:linear-gradient(180deg,#1b1714,#14110f)">
+      <div style="display:flex;align-items:center;gap:11px">
+        <div style="font-size:36px;font-weight:700;letter-spacing:-.06em;color:#fff;line-height:1">20<span style="color:#a98b58">%</span></div>
+        <div style="width:7px;height:7px;border-radius:2px;background:#a98b58;align-self:flex-end;margin-bottom:5px"></div>
+      </div>
+      <div style="font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:#9a8e80;margin-top:15px">Gestão de contratos</div>
+    </div>
+
+    <nav style="display:flex;flex-direction:column;gap:22px;padding:22px 14px;flex:1">
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <div style="font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#857a6d;padding:0 10px 8px">Operação</div>
+        <sc-for list="{{ navOp }}" as="item" hint-placeholder-count="3">
+          <button onClick="{{ item.go }}" style="text-align:left;border:0;cursor:pointer;font-size:13.5px;padding:9px 10px;border-radius:5px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:{{ item.bg }};color:{{ item.fg }};font-weight:{{ item.fw }}" style-hover="background:#241f1b;color:#f7f2ea">
+            <span>{{ item.label }}</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#8b8074">{{ item.count }}</span>
+          </button>
+        </sc-for>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <div style="font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#857a6d;padding:0 10px 8px">Financeiro</div>
+        <sc-for list="{{ navFin }}" as="item" hint-placeholder-count="2">
+          <button onClick="{{ item.go }}" style="text-align:left;border:0;cursor:pointer;font-size:13.5px;padding:9px 10px;border-radius:5px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:{{ item.bg }};color:{{ item.fg }};font-weight:{{ item.fw }}" style-hover="background:#241f1b;color:#f7f2ea">
+            <span>{{ item.label }}</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#8b8074">{{ item.count }}</span>
+          </button>
+        </sc-for>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <div style="font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#857a6d;padding:0 10px 8px">Sistema</div>
+        <sc-for list="{{ navSis }}" as="item" hint-placeholder-count="2">
+          <button onClick="{{ item.go }}" style="text-align:left;border:0;cursor:pointer;font-size:13.5px;padding:9px 10px;border-radius:5px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:{{ item.bg }};color:{{ item.fg }};font-weight:{{ item.fw }}" style-hover="background:#241f1b;color:#f7f2ea">
+            <span>{{ item.label }}</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#8b8074">{{ item.count }}</span>
+          </button>
+        </sc-for>
+      </div>
+    </nav>
+
+    <div style="padding:16px;border-top:1px solid #2a2420;display:flex;align-items:center;gap:10px">
+      <div style="width:30px;height:30px;border-radius:50%;background:#2f2823;color:#ddd0be;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600">HB</div>
+      <div style="min-width:0">
+        <div style="font-size:12.5px;color:#ece5da;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Dra. Helena Braga</div>
+        <div style="font-size:10.5px;color:#9a8e80">Sócia · OAB/SC 41.882</div>
+      </div>
+    </div>
+  </aside>
+
+  <main style="min-width:0;display:flex;flex-direction:column">
+    <header style="background:var(--panel,#fff);border-bottom:1px solid var(--bd,#e7e0d4);padding:12px 32px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;min-height:60px;position:sticky;top:0;z-index:5">
+      <div style="display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 180px">
+        <h1 style="font-family:"Instrument Sans",sans-serif;font-size:20px;font-weight:600;margin:0;letter-spacing:-.2px">{{ tituloTela }}</h1>
+        <span style="font-size:12px;color:var(--muted2,#8d8378)">{{ subtituloTela }}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end">
+        <label style="display:flex;align-items:center;gap:8px;background:var(--bg,#faf9f5);border:1px solid var(--bd,#e7e0d4);border-radius:5px;padding:0 11px;height:34px;flex:1 1 200px;max-width:270px" style-focus="border-color:var(--acc,#964f4c)">
+          <span style="width:11px;height:11px;border:1.5px solid var(--muted2,#8d8378);border-radius:50%;flex:none"></span>
+          <input placeholder="Buscar cliente, contrato ou CNPJ" style="border:0;background:transparent;outline:none;font-size:13px;width:100%;color:var(--ink,#14110f)">
+        </label>
+        <button onClick="{{ toggleTema }}" style="height:34px;padding:0 12px;border:1px solid var(--bd,#e7e0d4);background:var(--panel,#fff);border-radius:5px;font-size:12.5px;color:var(--ink2,#4a423c);cursor:pointer" style-hover="border-color:var(--bdStrong,#cfc4b2);color:var(--ink,#14110f)">{{ rotuloTema }}</button>
+        <button onClick="{{ togglePrivacidade }}" style="height:34px;padding:0 12px;border:1px solid var(--bd,#e7e0d4);background:var(--panel,#fff);border-radius:5px;font-size:12.5px;color:var(--ink2,#4a423c);cursor:pointer" style-hover="border-color:var(--bdStrong,#cfc4b2);color:var(--ink,#14110f)">{{ rotuloPrivacidade }}</button>
+        <button style="height:34px;padding:0 14px;border:0;background:var(--acc,#964f4c);color:var(--onacc,#fff);border-radius:5px;font-size:12.5px;font-weight:500;cursor:pointer" style-hover="background:var(--accH,#7a3e3c)">Novo contrato</button>
+      </div>
+    </header>
+
+    <div style="padding:28px 32px 48px;display:flex;flex-direction:column;gap:22px">
+
+      <!-- PAINEL -->
+      <sc-if value="{{ ehPainel }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-direction:column;gap:22px">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
+            <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+              <div style="background:var(--panel,#fff);border:1px solid var(--bd,#e7e0d4);border-radius:7px;padding:17px 18px 15px;display:flex;flex-direction:column;gap:9px">
+                <div style="font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted2,#8d8378)">{{ k.label }}</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:23px;font-weight:500;letter-spacing:-.6px">{{ k.value }}</div>
+                <div style="font-size:11.5px;color:var(--muted,#6f655d)">{{ k.hint }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:18px;align-items:start">
+            <section style="background:var(--panel,#fff);border:1px solid var(--bd,#e7e0d4);border-radius:7px;overflow:hidden">
+              <div style="padding:15px 18px;border-bottom:1px solid var(--hair,#efece5);display:flex;align-items:baseline;justify-content:space-between">
+                <h2 style="font-family:"Instrument Sans",sans-serif;font-size:15.5px;font-weight:600;margin:0">Recebimentos dos próximos 30 dias</h2>
+                <a href="#" onClick="{{ goPagamentos }}" style="font-size:12px">Ver agenda completa</a>
+              </div>
+              <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;min-width:560px">
+                <thead>
+                  <tr style="background:var(--thead,#f3efe7)">
+                    <th style="text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:9px 18px">Vencimento</th>
+                    <th style="text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:9px 12px">Cliente</th>
+                    <th style="text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:9px 12px">Hipótese</th>
+                    <th style="text-align:right;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:9px 18px">Valor</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <sc-for list="{{ agenda }}" as="p" hint-placeholder-count="5">
+                    <tr style="border-top:1px solid var(--hair,#eeeae1)">
+                      <td style="padding:12px 18px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--ink2,#4a423c)">{{ p.venc }}</td>
+                      <td style="padding:12px;font-size:13px">{{ p.cliente }}</td>
+                      <td style="padding:12px;font-size:12.5px;color:var(--muted,#6f655d)">{{ p.hipotese }}</td>
+                      <td style="padding:12px 18px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:13px">{{ p.valor }}</td>
+                    </tr>
+                  </sc-for>
+                </tbody>
+              </table></div>
+            </section>
+
+            <section style="background:var(--panel,#fff);border:1px solid var(--bd,#e7e0d4);border-radius:7px;overflow:hidden">
+              <div style="padding:15px 18px;border-bottom:1px solid var(--hair,#efece5)">
+                <h2 style="font-family:"Instrument Sans",sans-serif;font-size:15.5px;font-weight:600;margin:0">Exige atenção</h2>
+              </div>
+              <div style="display:flex;flex-direction:column">
+                <sc-for list="{{ pendencias }}" as="a" hint-placeholder-count="4">
+                  <div style="padding:14px 18px;border-top:1px solid var(--hair,#eeeae1);display:flex;gap:12px;align-items:flex-start">
+                    <span style="width:6px;height:6px;border-radius:50%;margin-top:6px;flex:none;background:{{ a.cor }}"></span>
+                    <div style="min-width:0">
+                      <div style="font-size:13px;font-weight:500">{{ a.titulo }}</div>
+                      <div style="font-size:12px;color:var(--muted,#6f655d);margin-top:3px">{{ a.detalhe }}</div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </section>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- CONTRATOS -->
+      <sc-if value="{{ ehContratos }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <sc-for list="{{ filtros }}" as="f" hint-placeholder-count="4">
+              <button onClick="{{ f.go }}" style="height:31px;padding:0 13px;border-radius:99px;font-size:12.5px;cursor:pointer;border:1px solid {{ f.bd }};background:{{ f.bg }};color:{{ f.fg }}" style-hover="border-color:var(--acc,#964f4c)">{{ f.label }}</button>
+            </sc-for>
+            <div style="flex:1"></div>
+            <span style="font-size:12px;color:var(--muted2,#8d8378)">{{ totalContratos }}</span>
+          </div>
+
+          <section style="background:var(--panel,#fff);border:1px solid var(--bd,#e7e0d4);border-radius:7px;overflow:hidden">
+            <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;min-width:560px">
+              <thead>
+                <tr style="background:var(--thead,#f3efe7)">
+                  <th style="text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:10px 18px">Contrato</th>
+                  <th style="text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:10px 12px">Cliente</th>
+                  <th style="text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:10px 12px">Área · Tipo</th>
+                  <th style="text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:10px 12px">Responsável</th>
+                  <th style="text-align:right;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:10px 12px">Honorários</th>
+                  <th style="text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:10px 12px">Recebido</th>
+                  <th style="text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:10px 18px">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <sc-for list="{{ contratos }}" as="c" hint-placeholder-count="7">
+                  <tr onClick="{{ c.abrir }}" style="border-top:1px solid var(--hair,#eeeae1);cursor:pointer" style-hover="background:var(--thead,#f3efe7)">
+                    <td style="padding:13px 18px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--acc,#964f4c);white-space:nowrap">{{ c.id }}</td>
+                    <td style="padding:13px 12px;font-size:13.5px;font-weight:500">{{ c.cliente }}</td>
+                    <td style="padding:13px 12px;font-size:12.5px;color:var(--muted,#6f655d)">{{ c.area }}</td>
+                    <td style="padding:13px 12px;font-size:12.5px;color:var(--ink2,#4a423c)">{{ c.adv }}</td>
+                    <td style="padding:13px 12px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:13px">{{ c.valor }}</td>
+                    <td style="padding:13px 12px;width:130px">
+                      <div style="display:flex;align-items:center;gap:8px">
+                        <div style="flex:1;height:4px;background:var(--hair2,#e7e0d4);border-radius:99px;overflow:hidden">
+                          <div style="height:100%;border-radius:99px;background:var(--grn,#4a6b4f);width:{{ c.pct }}"></div>
+                        </div>
+                        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted,#6f655d)">{{ c.pct }}</span>
+                      </div>
+                    </td>
+                    <td style="padding:13px 18px">
+                      <span style="display:inline-block;font-size:11px;padding:3px 9px;border-radius:4px;background:{{ c.stBg }};color:{{ c.stFg }};white-space:nowrap">{{ c.status }}</span>
+                    </td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table></div>
+          </section>
+        </div>
+      </sc-if>
+
+      <!-- CONTRATO -->
+      <sc-if value="{{ ehContrato }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:18px">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap">
+            <div>
+              <a href="#" onClick="{{ goContratos }}" style="font-size:12px">← Contratos</a>
+              <div style="display:flex;align-items:center;gap:12px;margin-top:8px">
+                <h2 style="font-family:"Instrument Sans",sans-serif;font-size:26px;font-weight:600;margin:0;letter-spacing:-.4px">{{ atual.cliente }}</h2>
+                <span style="font-size:11px;padding:3px 9px;border-radius:4px;background:var(--grnBg,#eaefe8);color:var(--grn,#4a6b4f)">Ativo</span>
+              </div>
+              <div style="font-size:12.5px;color:var(--muted,#6f655d);margin-top:6px;font-family:'JetBrains Mono',monospace">{{ atual.id }} · {{ atual.area }} · assinado em {{ atual.assinado }}</div>
+            </div>
+            <div style="display:flex;gap:22px;background:var(--panel,#fff);border:1px solid var(--bd,#e7e0d4);border-radius:7px;padding:16px 22px">
+              <div>
+                <div style="font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted2,#8d8378)">Contratado</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:18px;margin-top:5px">{{ atual.total }}</div>
+              </div>
+              <div style="width:1px;background:var(--hair2,#e7e0d4)"></div>
+              <div>
+                <div style="font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted2,#8d8378)">Recebido</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:18px;margin-top:5px;color:var(--grn,#4a6b4f)">{{ atual.recebido }}</div>
+              </div>
+              <div style="width:1px;background:var(--hair2,#e7e0d4)"></div>
+              <div>
+                <div style="font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted2,#8d8378)">Em aberto</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:18px;margin-top:5px;color:var(--amb,#8a6a30)">{{ atual.aberto }}</div>
+              </div>
+            </div>
+          </div>
+
+          <sc-for list="{{ tiers }}" as="t" hint-placeholder-count="4">
+            <section style="background:var(--panel,#fff);border:1px solid var(--bd,#e7e0d4);border-radius:7px;overflow:hidden">
+              <div style="padding:13px 18px;border-bottom:1px solid var(--hair,#efece5);display:flex;align-items:center;gap:12px">
+                <h3 style="font-family:"Instrument Sans",sans-serif;font-size:15px;font-weight:600;margin:0">{{ t.titulo }}</h3>
+                <span style="font-size:11.5px;color:var(--muted2,#8d8378)">{{ t.nota }}</span>
+                <div style="flex:1"></div>
+                <button style="height:29px;padding:0 11px;border:1px solid var(--bd,#e7e0d4);background:var(--panel,#fff);border-radius:5px;font-size:12px;color:var(--ink2,#4a423c);cursor:pointer" style-hover="border-color:var(--acc,#964f4c);color:var(--acc,#964f4c)">Adicionar hipótese</button>
+              </div>
+              <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;min-width:560px">
+                <thead>
+                  <tr style="background:var(--thead,#f3efe7)">
+                    <th style="text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:8px 18px">Hipótese</th>
+                    <th style="text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:8px 12px">Base de cálculo</th>
+                    <th style="text-align:right;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:8px 12px">Valor</th>
+                    <th style="text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:8px 12px">Parcelamento</th>
+                    <th style="text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:8px 18px">Quitação</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <sc-for list="{{ t.linhas }}" as="l" hint-placeholder-count="1">
+                    <tr style="border-top:1px solid var(--hair,#eeeae1)">
+                      <td style="padding:13px 18px;font-size:13.5px;font-weight:500">{{ l.hipotese }}</td>
+                      <td style="padding:13px 12px;font-size:12.5px;color:var(--muted,#6f655d)">{{ l.base }}</td>
+                      <td style="padding:13px 12px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:13px">{{ l.valor }}</td>
+                      <td style="padding:13px 12px;font-size:12.5px;color:var(--ink2,#4a423c)">{{ l.parcelamento }}</td>
+                      <td style="padding:13px 18px">
+                        <div style="display:flex;align-items:center;gap:10px">
+                          <span style="display:inline-block;font-size:11px;padding:3px 9px;border-radius:4px;background:{{ l.stBg }};color:{{ l.stFg }};white-space:nowrap">{{ l.status }}</span>
+                          <a href="#" onClick="{{ goPagamentos }}" style="font-size:12px">Gerir</a>
+                        </div>
+                      </td>
+                    </tr>
+                  </sc-for>
+                </tbody>
+              </table></div>
+            </section>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- PAGAMENTOS -->
+      <sc-if value="{{ ehPagamentos }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px">
+            <sc-for list="{{ kpisPag }}" as="k" hint-placeholder-count="3">
+              <div style="background:var(--panel,#fff);border:1px solid var(--bd,#e7e0d4);border-radius:7px;padding:15px 18px">
+                <div style="font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted2,#8d8378)">{{ k.label }}</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:20px;margin-top:7px">{{ k.value }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <section style="background:var(--panel,#fff);border:1px solid var(--bd,#e7e0d4);border-radius:7px;overflow:hidden">
+            <div style="padding:14px 18px;border-bottom:1px solid var(--hair,#efece5);display:flex;align-items:baseline;justify-content:space-between">
+              <h2 style="font-family:"Instrument Sans",sans-serif;font-size:15.5px;font-weight:600;margin:0">Parcelas em aberto</h2>
+              <span style="font-size:12px;color:var(--muted2,#8d8378)">Baixa manual ou por conciliação bancária</span>
+            </div>
+            <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;min-width:560px">
+              <thead>
+                <tr style="background:var(--thead,#f3efe7)">
+                  <th style="text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:9px 18px">Vencimento</th>
+                  <th style="text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:9px 12px">Contrato</th>
+                  <th style="text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:9px 12px">Cliente · hipótese</th>
+                  <th style="text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:9px 12px">Parcela</th>
+                  <th style="text-align:right;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:9px 12px">Valor</th>
+                  <th style="text-align:right;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:9px 18px">Ação</th>
+                </tr>
+              </thead>
+              <tbody>
+                <sc-for list="{{ parcelas }}" as="p" hint-placeholder-count="6">
+                  <tr style="border-top:1px solid var(--hair,#eeeae1)" style-hover="background:var(--thead,#f3efe7)">
+                    <td style="padding:12px 18px">
+                      <div style="display:flex;align-items:center;gap:9px">
+                        <span style="width:6px;height:6px;border-radius:50%;flex:none;background:{{ p.cor }}"></span>
+                        <span style="font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--ink2,#4a423c)">{{ p.venc }}</span>
+                      </div>
+                    </td>
+                    <td style="padding:12px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--acc,#964f4c)">{{ p.contrato }}</td>
+                    <td style="padding:12px;font-size:13px">{{ p.cliente }} <span style="color:var(--muted2,#8d8378)">· {{ p.hipotese }}</span></td>
+                    <td style="padding:12px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted,#6f655d)">{{ p.parcela }}</td>
+                    <td style="padding:12px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:13px">{{ p.valor }}</td>
+                    <td style="padding:12px 18px;text-align:right">
+                      <button onClick="{{ p.baixar }}" style="height:29px;padding:0 12px;border:1px solid {{ p.btBd }};background:{{ p.btBg }};color:{{ p.btFg }};border-radius:5px;font-size:12px;cursor:pointer;white-space:nowrap" style-hover="border-color:var(--grn,#4a6b4f);color:var(--grn,#4a6b4f)">{{ p.acao }}</button>
+                    </td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table></div>
+          </section>
+        </div>
+      </sc-if>
+
+      <!-- INADIMPLENTES -->
+      <sc-if value="{{ ehInadimplentes }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px">
+            <sc-for list="{{ aging }}" as="a" hint-placeholder-count="4">
+              <div style="background:var(--panel,#fff);border:1px solid var(--bd,#e7e0d4);border-radius:7px;padding:15px 18px;border-top:3px solid {{ a.cor }}">
+                <div style="font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted2,#8d8378)">{{ a.faixa }}</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:19px;margin-top:7px">{{ a.valor }}</div>
+                <div style="font-size:11.5px;color:var(--muted,#6f655d);margin-top:4px">{{ a.qtd }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <section style="background:var(--panel,#fff);border:1px solid var(--bd,#e7e0d4);border-radius:7px;overflow:hidden">
+            <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;min-width:560px">
+              <thead>
+                <tr style="background:var(--thead,#f3efe7)">
+                  <th style="text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:10px 18px">Cliente</th>
+                  <th style="text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:10px 12px">Contrato</th>
+                  <th style="text-align:right;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:10px 12px">Em atraso</th>
+                  <th style="text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:10px 12px">Atraso</th>
+                  <th style="text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:10px 12px">Última tratativa</th>
+                  <th style="text-align:right;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:10px 18px">Próximo passo</th>
+                </tr>
+              </thead>
+              <tbody>
+                <sc-for list="{{ inadimplentes }}" as="i" hint-placeholder-count="4">
+                  <tr style="border-top:1px solid var(--hair,#eeeae1)">
+                    <td style="padding:13px 18px;font-size:13.5px;font-weight:500">{{ i.cliente }}</td>
+                    <td style="padding:13px 12px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--acc,#964f4c)">{{ i.contrato }}</td>
+                    <td style="padding:13px 12px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--red,#8c3a34)">{{ i.valor }}</td>
+                    <td style="padding:13px 12px;font-size:12.5px;color:var(--ink2,#4a423c)">{{ i.dias }}</td>
+                    <td style="padding:13px 12px;font-size:12.5px;color:var(--muted,#6f655d)">{{ i.tratativa }}</td>
+                    <td style="padding:13px 18px;text-align:right"><a href="#" style="font-size:12.5px">{{ i.passo }}</a></td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table></div>
+          </section>
+        </div>
+      </sc-if>
+
+      <!-- CLIENTES -->
+      <sc-if value="{{ ehClientes }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:start">
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <section style="background:var(--panel,#fff);border:1px solid var(--bd,#e7e0d4);border-radius:7px;padding:20px 22px">
+              <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:16px">
+                <h2 style="font-family:"Instrument Sans",sans-serif;font-size:16px;font-weight:600;margin:0">Identificação</h2>
+                <span style="font-size:11.5px;color:var(--muted2,#8d8378)">Pessoa jurídica</span>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px 16px">
+                <label style="display:flex;flex-direction:column;gap:6px;grid-column:1/-1">
+                  <span style="font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378)">Razão social</span>
+                  <input value="Móveis Aurora Ltda." style="height:36px;border:1px solid var(--bd,#e7e0d4);border-radius:5px;padding:0 11px;font-size:13.5px;background:var(--field,#faf9f5);outline:none" style-focus="border-color:var(--acc,#964f4c);background:var(--panel,#fff)">
+                </label>
+                <label style="display:flex;flex-direction:column;gap:6px">
+                  <span style="font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378)">CNPJ</span>
+                  <input value="12.408.771/0001-64" style="height:36px;border:1px solid var(--bd,#e7e0d4);border-radius:5px;padding:0 11px;font-size:13.5px;font-family:'JetBrains Mono',monospace;background:var(--field,#faf9f5);outline:none" style-focus="border-color:var(--acc,#964f4c);background:var(--panel,#fff)">
+                </label>
+                <label style="display:flex;flex-direction:column;gap:6px">
+                  <span style="font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378)">Telefone</span>
+                  <input value="(48) 3224-9080" style="height:36px;border:1px solid var(--bd,#e7e0d4);border-radius:5px;padding:0 11px;font-size:13.5px;background:var(--field,#faf9f5);outline:none" style-focus="border-color:var(--acc,#964f4c);background:var(--panel,#fff)">
+                </label>
+                <label style="display:flex;flex-direction:column;gap:6px">
+                  <span style="font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378)">E-mail</span>
+                  <input value="juridico@moveisaurora.com.br" style="height:36px;border:1px solid var(--bd,#e7e0d4);border-radius:5px;padding:0 11px;font-size:13.5px;background:var(--field,#faf9f5);outline:none" style-focus="border-color:var(--acc,#964f4c);background:var(--panel,#fff)">
+                </label>
+                <label style="display:flex;flex-direction:column;gap:6px">
+                  <span style="font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378)">Representante legal</span>
+                  <input value="Marcos A. Ferreira" style="height:36px;border:1px solid var(--bd,#e7e0d4);border-radius:5px;padding:0 11px;font-size:13.5px;background:var(--field,#faf9f5);outline:none" style-focus="border-color:var(--acc,#964f4c);background:var(--panel,#fff)">
+                </label>
+              </div>
+            </section>
+
+            <section style="background:var(--panel,#fff);border:1px solid var(--bd,#e7e0d4);border-radius:7px;padding:20px 22px">
+              <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:16px">
+                <h2 style="font-family:"Instrument Sans",sans-serif;font-size:16px;font-weight:600;margin:0">Endereço</h2>
+                <span style="font-size:11.5px;color:var(--muted2,#8d8378)">Preenchido pelo CEP</span>
+              </div>
+              <div style="display:grid;grid-template-columns:120px minmax(0,2fr) 90px;gap:14px 16px">
+                <label style="display:flex;flex-direction:column;gap:6px">
+                  <span style="font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378)">CEP</span>
+                  <input value="88010-400" style="height:36px;border:1px solid var(--bd,#e7e0d4);border-radius:5px;padding:0 11px;font-size:13.5px;font-family:'JetBrains Mono',monospace;background:var(--field,#faf9f5);outline:none" style-focus="border-color:var(--acc,#964f4c);background:var(--panel,#fff)">
+                </label>
+                <label style="display:flex;flex-direction:column;gap:6px">
+                  <span style="font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378)">Logradouro</span>
+                  <input value="Rua Felipe Schmidt" style="height:36px;border:1px solid var(--bd,#e7e0d4);border-radius:5px;padding:0 11px;font-size:13.5px;background:var(--field,#faf9f5);outline:none" style-focus="border-color:var(--acc,#964f4c);background:var(--panel,#fff)">
+                </label>
+                <label style="display:flex;flex-direction:column;gap:6px">
+                  <span style="font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378)">Número</span>
+                  <input value="510" style="height:36px;border:1px solid var(--bd,#e7e0d4);border-radius:5px;padding:0 11px;font-size:13.5px;background:var(--field,#faf9f5);outline:none" style-focus="border-color:var(--acc,#964f4c);background:var(--panel,#fff)">
+                </label>
+                <label style="display:flex;flex-direction:column;gap:6px;grid-column:1/3">
+                  <span style="font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378)">Bairro</span>
+                  <input value="Centro" style="height:36px;border:1px solid var(--bd,#e7e0d4);border-radius:5px;padding:0 11px;font-size:13.5px;background:var(--field,#faf9f5);outline:none" style-focus="border-color:var(--acc,#964f4c);background:var(--panel,#fff)">
+                </label>
+                <label style="display:flex;flex-direction:column;gap:6px">
+                  <span style="font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378)">UF · Município</span>
+                  <input value="SC · Florianópolis" style="height:36px;border:1px solid var(--bd,#e7e0d4);border-radius:5px;padding:0 11px;font-size:13.5px;background:var(--field,#faf9f5);outline:none" style-focus="border-color:var(--acc,#964f4c);background:var(--panel,#fff)">
+                </label>
+              </div>
+            </section>
+
+            <div style="display:flex;gap:10px;justify-content:flex-end">
+              <button style="height:36px;padding:0 15px;border:1px solid var(--bd,#e7e0d4);background:var(--panel,#fff);border-radius:5px;font-size:13px;color:var(--ink2,#4a423c);cursor:pointer" style-hover="border-color:var(--bdStrong,#cfc4b2)">Cancelar</button>
+              <button style="height:36px;padding:0 18px;border:0;background:var(--acc,#964f4c);color:var(--onacc,#fff);border-radius:5px;font-size:13px;font-weight:500;cursor:pointer" style-hover="background:var(--accH,#7a3e3c)">Salvar cliente</button>
+            </div>
+          </div>
+
+          <aside style="display:flex;flex-direction:column;gap:14px;position:sticky;top:88px">
+            <div style="background:var(--panel,#fff);border:1px solid var(--bd,#e7e0d4);border-radius:7px;padding:17px 18px">
+              <div style="font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted2,#8d8378)">Posição do cliente</div>
+              <div style="display:flex;flex-direction:column;gap:11px;margin-top:13px">
+                <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--muted,#6f655d)">Contratos ativos</span><span style="font-family:'JetBrains Mono',monospace">2</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--muted,#6f655d)">Contratado</span><span style="font-family:'JetBrains Mono',monospace">{{ atual.total }}</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--muted,#6f655d)">Em aberto</span><span style="font-family:'JetBrains Mono',monospace;color:var(--amb,#8a6a30)">{{ atual.aberto }}</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--muted,#6f655d)">Atrasos</span><span style="font-family:'JetBrains Mono',monospace">Nenhum</span></div>
+              </div>
+            </div>
+            <div style="background:var(--panel,#fff);border:1px solid var(--bd,#e7e0d4);border-radius:7px;padding:17px 18px">
+              <div style="font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted2,#8d8378)">Histórico</div>
+              <div style="display:flex;flex-direction:column;gap:12px;margin-top:13px">
+                <sc-for list="{{ historico }}" as="h" hint-placeholder-count="3">
+                  <div style="display:flex;gap:10px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted2,#8d8378);flex:none;width:44px">{{ h.data }}</span>
+                    <span style="font-size:12.5px;color:var(--ink2,#4a423c)">{{ h.texto }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </sc-if>
+
+      <!-- CONFIGURAÇÕES -->
+      <sc-if value="{{ ehConfig }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:18px">
+          <div style="display:flex;gap:4px;border-bottom:1px solid var(--bd,#e7e0d4);padding-bottom:0">
+            <sc-for list="{{ cfgTabs }}" as="tb" hint-placeholder-count="2">
+              <button onClick="{{ tb.go }}" style="border:0;background:transparent;cursor:pointer;font-size:13.5px;padding:9px 14px 11px;border-bottom:2px solid {{ tb.bd }};color:{{ tb.fg }};font-weight:{{ tb.fw }}" style-hover="color:var(--ink,#14110f)">{{ tb.label }}</button>
+            </sc-for>
+          </div>
+
+          <sc-if value="{{ ehExport }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:26px">
+              <sc-for list="{{ exportGrupos }}" as="g" hint-placeholder-count="2">
+                <section style="display:flex;flex-direction:column;gap:13px">
+                  <div>
+                    <h2 style="font-size:15.5px;font-weight:600;margin:0;letter-spacing:-.01em">{{ g.titulo }}</h2>
+                    <p style="font-size:12.5px;color:var(--muted,#6f655d);margin:5px 0 0">{{ g.nota }}</p>
+                  </div>
+                  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px">
+                    <sc-for list="{{ g.itens }}" as="it" hint-placeholder-count="2">
+                      <div style="background:var(--panel,#fff);border:1px solid var(--bd,#e7e0d4);border-radius:7px;padding:18px;display:flex;flex-direction:column;gap:9px">
+                        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
+                          <span style="font-size:14px;font-weight:600">{{ it.nome }}</span>
+                          <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--muted2,#8d8378)">{{ it.ext }}</span>
+                        </div>
+                        <p style="font-size:12.5px;color:var(--muted,#6f655d);margin:0;line-height:1.5;flex:1">{{ it.desc }}</p>
+                        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:3px">
+                          <span style="font-size:11.5px;color:var(--muted2,#8d8378)">{{ it.meta }}</span>
+                          <button style="height:32px;padding:0 15px;border:0;background:var(--acc,#964f4c);color:var(--onacc,#fff);border-radius:5px;font-size:12.5px;font-weight:500;cursor:pointer" style-hover="background:var(--accH,#7a3e3c)">Exportar</button>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </section>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ ehUsuarios }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap">
+                <div>
+                  <h2 style="font-size:15.5px;font-weight:600;margin:0;letter-spacing:-.01em">Usuários do sistema</h2>
+                  <p style="font-size:12.5px;color:var(--muted,#6f655d);margin:5px 0 0">7 ativos · 1 convite pendente · perfis definem o que cada um vê e edita</p>
+                </div>
+                <button style="height:34px;padding:0 15px;border:0;background:var(--acc,#964f4c);color:var(--onacc,#fff);border-radius:5px;font-size:12.5px;font-weight:500;cursor:pointer" style-hover="background:var(--accH,#7a3e3c)">Convidar usuário</button>
+              </div>
+              <section style="background:var(--panel,#fff);border:1px solid var(--bd,#e7e0d4);border-radius:7px;overflow:hidden">
+                <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;min-width:640px">
+                  <thead>
+                    <tr style="background:var(--thead,#f3efe7)">
+                      <th style="text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:10px 18px">Usuário</th>
+                      <th style="text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:10px 12px">Perfil</th>
+                      <th style="text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:10px 12px">Escopo</th>
+                      <th style="text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:10px 12px">Último acesso</th>
+                      <th style="text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:10px 12px">Status</th>
+                      <th style="text-align:right;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2,#8d8378);font-weight:500;padding:10px 18px">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <sc-for list="{{ usuarios }}" as="u" hint-placeholder-count="5">
+                      <tr style="border-top:1px solid var(--hair,#eeeae1)" style-hover="background:var(--thead,#f3efe7)">
+                        <td style="padding:12px 18px">
+                          <div style="display:flex;align-items:center;gap:11px">
+                            <span style="width:29px;height:29px;border-radius:50%;flex:none;background:var(--accBg,#f4eae8);color:var(--acc,#964f4c);display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:600">{{ u.ini }}</span>
+                            <span>
+                              <span style="display:block;font-size:13.5px;font-weight:500">{{ u.nome }}</span>
+                              <span style="display:block;font-size:11.5px;color:var(--muted2,#8d8378)">{{ u.email }}</span>
+                            </span>
+                          </div>
+                        </td>
+                        <td style="padding:12px"><span style="display:inline-block;font-size:11px;padding:3px 9px;border-radius:4px;background:{{ u.pBg }};color:{{ u.pFg }};white-space:nowrap">{{ u.perfil }}</span></td>
+                        <td style="padding:12px;font-size:12.5px;color:var(--ink2,#4a423c)">{{ u.escopo }}</td>
+                        <td style="padding:12px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted,#6f655d)">{{ u.acesso }}</td>
+                        <td style="padding:12px;font-size:12.5px;color:{{ u.stFg }}">{{ u.status }}</td>
+                        <td style="padding:12px 18px;text-align:right"><a href="#" style="font-size:12.5px">Editar permissões</a></td>
+                      </tr>
+                    </sc-for>
+                  </tbody>
+                </table></div>
+              </section>
+              <section style="background:var(--panel,#fff);border:1px solid var(--bd,#e7e0d4);border-radius:7px;padding:18px 20px">
+                <h3 style="font-size:14px;font-weight:600;margin:0 0 3px">O que cada perfil pode fazer</h3>
+                <p style="font-size:12.5px;color:var(--muted,#6f655d);margin:0 0 14px">Perfis são fixos; o escopo por advogado ou área é ajustável por usuário.</p>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:13px">
+                  <sc-for list="{{ perfis }}" as="pf" hint-placeholder-count="4">
+                    <div style="border:1px solid var(--bd,#e7e0d4);border-radius:6px;padding:14px 15px;border-left:3px solid var(--latao,#a98b58)">
+                      <div style="font-size:13px;font-weight:600">{{ pf.nome }}</div>
+                      <div style="font-size:12px;color:var(--muted,#6f655d);margin-top:6px;line-height:1.5">{{ pf.desc }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </section>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;tema&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;claro&quot;,&quot;escuro&quot;],&quot;default&quot;:&quot;claro&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Apresentação&quot;},&quot;valoresOcultos&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Apresentação&quot;}}">
+class Component extends DCLogic {
+  state = { tela: "painel", filtro: "Todos", privado: false, baixadas: {}, tema: null };
+
+  get tema() { return this.state.tema || this.props.tema || "claro"; }
+
+  temaVars() {
+    if (this.tema === "escuro") return "--bg:#14110f;--panel:#1d1917;--field:#191513;--thead:#231e1b;--bd:#332c27;--hair:#2b2521;--hair2:#2b2521;--bdStrong:#473d36;--ink:#f0ebe4;--ink2:#cfc4b6;--muted:#a89c8f;--muted2:#8b8074;--acc:#c4756f;--accH:#d99a94;--accBg:#2e211f;--grn:#7fae86;--grnBg:#1c2a1e;--grnBd:#2f4433;--amb:#c4a473;--ambBg:#2c2417;--red:#d97b72;--onacc:#14110f";
+    return "--bg:#faf9f5;--panel:#ffffff;--field:#faf9f5;--thead:#f3efe7;--bd:#e7e0d4;--latao:#a98b58;--hair:#eeeae1;--hair2:#e7e0d4;--bdStrong:#cfc4b2;--ink:#14110f;--ink2:#4a423c;--muted:#6f655d;--muted2:#8d8378;--acc:#964f4c;--accH:#7a3e3c;--accBg:#f4eae8;--grn:#4a6b4f;--grnBg:#eaefe8;--grnBd:#cfdcd0;--amb:#8a6a30;--ambBg:#f6eedd;--red:#8c3a34;--onacc:#ffffff";
+  }
+
+  go(t) { return () => this.setState({ tela: t }); }
+
+  mask(v) { return this.props.valoresOcultos || this.state.privado ? "R$ ••••••" : v; }
+
+  navItem(key, label, count) {
+    const on = this.state.tela === key || (key === "contratos" && this.state.tela === "contrato");
+    return { key, label, count, go: this.go(key), bg: on ? "#241f1a" : "transparent", fg: on ? "#fbf7f0" : "#cfc4b6", fw: on ? "500" : "400" };
+  }
+
+  renderVals() {
+    const t = this.state.tela;
+    const m = (v) => this.mask(v);
+    const titulos = {
+      painel: ["Painel", "Setembro de 2026"],
+      contratos: ["Contratos", "37 ativos · 6 encerrados"],
+      contrato: ["Contrato", "CTT-2026-014"],
+      pagamentos: ["Pagamentos", "Agenda e baixas"],
+      inadimplentes: ["Inadimplência", "R$ 41.250 em atraso"],
+      clientes: ["Clientes", "Cadastro e posição"],
+      configuracoes: ["Configurações", "Exportação, usuários e permissões"]
+    };
+    const tit = titulos[t] || titulos.painel;
+
+    const st = { Ativo: ["var(--grnBg,#eaefe8)", "var(--grn,#4a6b4f)"], "Em renovação": ["var(--accBg,#f4eae8)", "var(--acc,#964f4c)"], Suspenso: ["var(--ambBg,#f6eedd)", "var(--amb,#8a6a30)"], Encerrado: ["var(--hair2,#f0ece4)", "var(--muted,#6f655d)"] };
+    const rawContratos = [
+      ["CTT-2026-014", "Móveis Aurora Ltda.", "Trabalhista · Contencioso", "Dra. Helena Braga", "R$ 266.720", "38%", "Ativo"],
+      ["CTT-2026-011", "Transportes Vale Norte S.A.", "Tributário · Consultivo", "Dr. Rafael Nunes", "R$ 184.000", "72%", "Ativo"],
+      ["CTT-2026-009", "Construtora Beira-Mar", "Cível · Contencioso", "Dra. Helena Braga", "R$ 412.500", "15%", "Em renovação"],
+      ["CTT-2026-007", "Clínica Santa Lúcia", "Cível · Consultivo", "Dra. Priscila Alves", "R$ 96.000", "88%", "Ativo"],
+      ["CTT-2026-004", "Agropecuária Serrana", "Ambiental · Contencioso", "Dr. Rafael Nunes", "R$ 320.000", "26%", "Suspenso"],
+      ["CTT-2025-052", "Rede Vestir Comércio", "Trabalhista · Contencioso", "Dra. Priscila Alves", "R$ 148.400", "100%", "Encerrado"],
+      ["CTT-2025-048", "Hotel Ilha Azul", "Tributário · Contencioso", "Dra. Helena Braga", "R$ 231.900", "54%", "Ativo"]
+    ];
+    const contratos = rawContratos
+      .filter(r => this.state.filtro === "Todos" || r[6] === this.state.filtro)
+      .map(r => ({ id: r[0], cliente: r[1], area: r[2], adv: r[3], valor: m(r[4]), pct: r[5], status: r[6], stBg: st[r[6]][0], stFg: st[r[6]][1], abrir: this.go("contrato") }));
+
+    const filtros = ["Todos", "Ativo", "Em renovação", "Suspenso", "Encerrado"].map(f => {
+      const on = this.state.filtro === f;
+      return { label: f, go: () => this.setState({ filtro: f }), bg: on ? "var(--acc,var(--acc,#964f4c))" : "var(--panel,#fff)", fg: on ? "var(--onacc,#fff)" : "var(--ink2,var(--ink2,#4a423c))", bd: on ? "var(--acc,#964f4c)" : "var(--bd,#e7e0d4)" };
+    });
+
+    const tiers = [
+      { titulo: "Honorários iniciais", nota: "devidos na contratação", linhas: [
+        { hipotese: "Assinatura do contrato", base: "Valor fixo", valor: m("R$ 20.000"), parcelamento: "2× R$ 10.000 · quitado", status: "Quitado", stBg: "var(--grnBg,#eaefe8)", stFg: "var(--grn,#4a6b4f)" }
+      ]},
+      { titulo: "Honorários condicionados", nota: "disparados por evento processual", linhas: [
+        { hipotese: "Interposição de apelação", base: "Valor fixo por ato", valor: m("R$ 14.000"), parcelamento: "À vista · vence 20/09", status: "Pendente", stBg: "var(--ambBg,#f6eedd)", stFg: "var(--amb,#8a6a30)" },
+        { hipotese: "Recurso especial", base: "Valor fixo por ato", valor: m("R$ 22.000"), parcelamento: "Não definido", status: "Não disparado", stBg: "var(--hair2,#f0ece4)", stFg: "var(--muted,#6f655d)" }
+      ]},
+      { titulo: "Honorários de êxito", nota: "20% sobre o proveito econômico", linhas: [
+        { hipotese: "Ganho da causa em 1ª instância", base: "20% de R$ 1.100.000", valor: m("R$ 220.000"), parcelamento: "6× após trânsito em julgado", status: "Condicionado", stBg: "var(--accBg,#f4eae8)", stFg: "var(--acc,#964f4c)" }
+      ]},
+      { titulo: "Honorários por hora", nota: "apontamentos do mês corrente", linhas: [
+        { hipotese: "Acompanhamento de audiências", base: "26,5 h × R$ 480", valor: m("R$ 12.720"), parcelamento: "Fatura mensal · 05/10", status: "Em aberto", stBg: "var(--ambBg,#f6eedd)", stFg: "var(--amb,#8a6a30)" }
+      ]}
+    ];
+
+    const parcelas = [
+      ["04/09", "CTT-2026-011", "Transportes Vale Norte", "Iniciais", "3/6", "R$ 12.400", "var(--red,#8c3a34)", "Em atraso"],
+      ["12/09", "CTT-2026-014", "Móveis Aurora", "Condicionados", "1/1", "R$ 14.000", "var(--amb,#8a6a30)", "Vence em 7 dias"],
+      ["15/09", "CTT-2026-007", "Clínica Santa Lúcia", "Hora trabalhada", "—", "R$ 8.640", "var(--amb,#8a6a30)", "Vence em 10 dias"],
+      ["20/09", "CTT-2025-048", "Hotel Ilha Azul", "Iniciais", "4/8", "R$ 18.500", "var(--bdStrong,#cfc4b2)", "Programada"],
+      ["01/10", "CTT-2026-009", "Construtora Beira-Mar", "Iniciais", "2/10", "R$ 24.750", "var(--bdStrong,#cfc4b2)", "Programada"],
+      ["05/10", "CTT-2026-004", "Agropecuária Serrana", "Condicionados", "1/2", "R$ 16.000", "var(--bdStrong,#cfc4b2)", "Programada"]
+    ].map((p, i) => {
+      const paga = !!this.state.baixadas[i];
+      return {
+        venc: p[0], contrato: p[1], cliente: p[2], hipotese: p[3], parcela: p[4], valor: m(p[5]),
+        cor: paga ? "var(--grn,#4a6b4f)" : p[6],
+        acao: paga ? "Baixada" : "Registrar baixa",
+        btBg: paga ? "var(--grnBg,#eaefe8)" : "var(--panel,#fff)", btFg: paga ? "var(--grn,#4a6b4f)" : "var(--ink2,#4a423c)", btBd: paga ? "var(--grnBd,#cfdcd0)" : "var(--bd,#e7e0d4)",
+        baixar: () => this.setState(s => ({ baixadas: Object.assign({}, s.baixadas, { [i]: !s.baixadas[i] }) }))
+      };
+    });
+
+    return {
+      tituloTela: tit[0], subtituloTela: tit[1],
+      ehPainel: t === "painel", ehContratos: t === "contratos", ehContrato: t === "contrato",
+      ehPagamentos: t === "pagamentos", ehInadimplentes: t === "inadimplentes", ehClientes: t === "clientes", ehConfig: t === "configuracoes",
+      goContratos: this.go("contratos"), goPagamentos: this.go("pagamentos"),
+      cfgTabs: ["Exportação", "Usuários e permissões"].map(l => {
+        const key = l === "Exportação" ? "exportacao" : "usuarios";
+        const on = (this.state.cfg || "exportacao") === key;
+        return { label: l, go: () => this.setState({ cfg: key }), bd: on ? "var(--acc,#964f4c)" : "transparent", fg: on ? "var(--ink,#14110f)" : "var(--muted,#6f655d)", fw: on ? "600" : "400" };
+      }),
+      ehExport: (this.state.cfg || "exportacao") === "exportacao",
+      ehUsuarios: this.state.cfg === "usuarios",
+      exportGrupos: [
+        { titulo: "Banco de dados", nota: "Cópia integral dos registros do sistema.", itens: [
+          { nome: "Banco SQLite", ext: ".db", desc: "Banco completo, pronto para backup ou migração.", meta: "Última: 02/09 às 18:40" },
+          { nome: "Planilha Excel", ext: ".xlsx", desc: "Contratos, honorários e parcelas em abas separadas.", meta: "Última: 01/09 às 09:12" }
+        ]},
+        { titulo: "Arquivos de contratos", nota: "Documentos anexados a cada contrato.", itens: [
+          { nome: "Arquivos ZIP", ext: ".zip", desc: "Todos os anexos compactados, organizados por contrato.", meta: "3,4 GB · 412 arquivos" }
+        ]},
+        { titulo: "Relatórios financeiros", nota: "Recortes prontos para o contador ou para o sócio.", itens: [
+          { nome: "Recebimentos do período", ext: ".csv", desc: "Baixas registradas com contrato, hipótese e data.", meta: "Filtra por competência" },
+          { nome: "Inadimplência", ext: ".pdf", desc: "Posição por cliente com aging e tratativas.", meta: "Gera com a data de hoje" }
+        ]}
+      ],
+      usuarios: [
+        { ini: "HB", nome: "Helena Braga", email: "helena@bragaadvocacia.com.br", perfil: "Sócia", escopo: "Todos os contratos", acesso: "hoje, 08:14", status: "Ativo", stFg: "var(--grn,#4a6b4f)", pBg: "var(--accBg,#f4eae8)", pFg: "var(--acc,#964f4c)" },
+        { ini: "RN", nome: "Rafael Nunes", email: "rafael@bragaadvocacia.com.br", perfil: "Advogado", escopo: "Tributário e ambiental", acesso: "hoje, 07:52", status: "Ativo", stFg: "var(--grn,#4a6b4f)", pBg: "var(--thead,#f3efe7)", pFg: "var(--ink2,#4a423c)" },
+        { ini: "PA", nome: "Priscila Alves", email: "priscila@bragaadvocacia.com.br", perfil: "Advogada", escopo: "Cível e trabalhista", acesso: "ontem, 19:03", status: "Ativo", stFg: "var(--grn,#4a6b4f)", pBg: "var(--thead,#f3efe7)", pFg: "var(--ink2,#4a423c)" },
+        { ini: "CM", nome: "Camila Moraes", email: "financeiro@bragaadvocacia.com.br", perfil: "Financeiro", escopo: "Pagamentos e inadimplência", acesso: "hoje, 09:30", status: "Ativo", stFg: "var(--grn,#4a6b4f)", pBg: "var(--thead,#f3efe7)", pFg: "var(--ink2,#4a423c)" },
+        { ini: "TL", nome: "Tiago Lemes", email: "tiago@bragaadvocacia.com.br", perfil: "Paralegal", escopo: "Cadastros e apontamentos", acesso: "28/08, 16:20", status: "Ativo", stFg: "var(--grn,#4a6b4f)", pBg: "var(--thead,#f3efe7)", pFg: "var(--ink2,#4a423c)" },
+        { ini: "MS", nome: "Marina Souza", email: "marina@bragaadvocacia.com.br", perfil: "Paralegal", escopo: "Cadastros", acesso: "—", status: "Convite pendente", stFg: "var(--amb,#8a6a30)", pBg: "var(--thead,#f3efe7)", pFg: "var(--ink2,#4a423c)" }
+      ],
+      perfis: [
+        { nome: "Sócio", desc: "Vê tudo, define honorários e gere usuários." },
+        { nome: "Advogado", desc: "Vê os contratos do próprio escopo e aponta horas." },
+        { nome: "Financeiro", desc: "Registra baixas e trata inadimplência; não edita cláusulas." },
+        { nome: "Paralegal", desc: "Cadastra clientes e contratos; não vê valores consolidados." }
+      ],
+      temaVars: this.temaVars(),
+      rotuloTema: this.tema === "escuro" ? "Modo claro" : "Modo escuro",
+      toggleTema: () => this.setState({ tema: this.tema === "escuro" ? "claro" : "escuro" }),
+      togglePrivacidade: () => this.setState(s => ({ privado: !s.privado })),
+      rotuloPrivacidade: this.state.privado ? "Mostrar valores" : "Ocultar valores",
+      navOp: [this.navItem("painel", "Painel", ""), this.navItem("contratos", "Contratos", "37"), this.navItem("clientes", "Clientes", "112")],
+      navFin: [this.navItem("pagamentos", "Pagamentos", "18"), this.navItem("inadimplentes", "Inadimplentes", "4")],
+      navSis: [this.navItem("configuracoes", "Configurações", "")],
+      kpis: [
+        { label: "A receber · 30 dias", value: m("R$ 148.900"), hint: "18 parcelas em 11 contratos" },
+        { label: "Recebido em setembro", value: m("R$ 96.400"), hint: "62% da meta do trimestre" },
+        { label: "Em atraso", value: m("R$ 41.250"), hint: "4 clientes · maior atraso 63 dias" },
+        { label: "Êxito provisionado", value: m("R$ 1,84 mi"), hint: "7 causas aguardando decisão" }
+      ],
+      agenda: parcelas.slice(0, 5).map(p => ({ venc: p.venc, cliente: p.cliente, hipotese: p.hipotese, valor: p.valor })),
+      pendencias: [
+        { titulo: "Transportes Vale Norte · parcela 3/6 vencida", detalhe: "R$ 12.400 · 32 dias de atraso · sem tratativa registrada", cor: "var(--red,#8c3a34)" },
+        { titulo: "Construtora Beira-Mar vence em 21 dias", detalhe: "Contrato CTT-2026-009 · renovação não iniciada", cor: "var(--amb,#8a6a30)" },
+        { titulo: "Apelação de Móveis Aurora protocolada", detalhe: "Dispara honorário condicionado de R$ 14.000", cor: "var(--acc,#964f4c)" },
+        { titulo: "12 h de apontamentos sem contrato vinculado", detalhe: "Dr. Rafael Nunes · agosto", cor: "var(--amb,#8a6a30)" }
+      ],
+      contratos, totalContratos: contratos.length + " contratos", filtros,
+      atual: { id: "CTT-2026-014", cliente: "Móveis Aurora Ltda.", area: "Trabalhista · Contencioso", assinado: "14/02/2026", total: m("R$ 266.720"), recebido: m("R$ 101.350"), aberto: m("R$ 165.370") },
+      tiers,
+      kpisPag: [
+        { label: "Vencendo esta semana", value: m("R$ 22.640") },
+        { label: "Em atraso", value: m("R$ 41.250") },
+        { label: "Programado no trimestre", value: m("R$ 312.800") }
+      ],
+      parcelas,
+      aging: [
+        { faixa: "1 a 15 dias", valor: m("R$ 6.900"), qtd: "1 cliente", cor: "var(--latao,#a98b58)" },
+        { faixa: "16 a 30 dias", valor: m("R$ 9.500"), qtd: "1 cliente", cor: "#b07a52" },
+        { faixa: "31 a 60 dias", valor: m("R$ 12.400"), qtd: "1 cliente", cor: "#a1604c" },
+        { faixa: "Acima de 60 dias", valor: m("R$ 12.450"), qtd: "1 cliente", cor: "var(--red,#8c3a34)" }
+      ],
+      inadimplentes: [
+        { cliente: "Transportes Vale Norte S.A.", contrato: "CTT-2026-011", valor: m("R$ 12.400"), dias: "32 dias", tratativa: "Nenhuma", passo: "Enviar notificação" },
+        { cliente: "Agropecuária Serrana", contrato: "CTT-2026-004", valor: m("R$ 12.450"), dias: "63 dias", tratativa: "Contato telefônico · 21/08", passo: "Propor acordo" },
+        { cliente: "Hotel Ilha Azul", contrato: "CTT-2025-048", valor: m("R$ 9.500"), dias: "24 dias", tratativa: "E-mail · 30/08", passo: "Cobrar retorno" },
+        { cliente: "Rede Vestir Comércio", contrato: "CTT-2025-052", valor: m("R$ 6.900"), dias: "11 dias", tratativa: "Boleto reemitido", passo: "Aguardar vencimento" }
+      ],
+      historico: [
+        { data: "14/02", texto: "Contrato CTT-2026-014 assinado" },
+        { data: "02/05", texto: "Honorário inicial quitado em 2 parcelas" },
+        { data: "28/08", texto: "Apelação protocolada · honorário condicionado disparado" }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
+

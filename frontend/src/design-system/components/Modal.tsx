@@ -7,9 +7,11 @@ interface ModalProps {
   title: string
   children: ReactNode
   footer?: ReactNode
+  /** Diálogos densos (tabela de honorários) pedem a largura maior. */
+  wide?: boolean
 }
 
-export function Modal({ open, onClose, title, children, footer }: ModalProps) {
+export function Modal({ open, onClose, title, children, footer, wide }: ModalProps) {
   useEffect(() => {
     if (!open) return
     const handler = (e: KeyboardEvent) => {
@@ -27,7 +29,7 @@ export function Modal({ open, onClose, title, children, footer }: ModalProps) {
 
   return (
     <div className={styles.overlay} onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
-      <div className={styles.modal}>
+      <div className={`${styles.modal} ${wide ? styles.wide : ''}`}>
         <div className={styles.header}>
           <span className={styles.title}>{title}</span>
           <button className={styles.closeBtn} onClick={onClose} aria-label="Fechar">

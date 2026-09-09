@@ -1,0 +1,30 @@
+.card {
+  background: var(--panel);
+  border: 1px solid var(--bd);
+  border-radius: var(--r-card);
+  padding: 17px 18px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.label {
+  font-size: var(--fs-micro2);
+  letter-spacing: var(--ls-micro2);
+  text-transform: uppercase;
+  color: var(--muted2);
+}
+
+.value {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 23px;
+  font-weight: var(--fw-medium);
+  letter-spacing: -0.6px;
+  line-height: 1.1;
+}
+
+.hint {
+  font-size: var(--fs-xs2);
+  color: var(--muted);
+}

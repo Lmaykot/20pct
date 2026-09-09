@@ -7,14 +7,14 @@ interface SearchInputProps extends InputHTMLAttributes<HTMLInputElement> {
 
 export function SearchInput({ wrapperClassName = '', className = '', ...props }: SearchInputProps) {
   return (
-    <div className={`${styles.wrapper} ${wrapperClassName}`}>
-      <span className={styles.icon}>&#x1F50D;</span>
+    <label className={`${styles.wrapper} ${wrapperClassName}`}>
+      <span className={styles.icon} aria-hidden="true" />
       <input
         type="text"
         className={`${styles.input} ${className}`}
         placeholder="Buscar..."
         {...props}
       />
-    </div>
+    </label>
   )
 }

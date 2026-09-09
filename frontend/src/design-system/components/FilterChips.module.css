@@ -1,0 +1,19 @@
+.chip {
+  height: var(--h-sm);
+  padding: 0 13px;
+  border-radius: var(--r-pill);
+  font-size: var(--fs-sm2);
+  cursor: pointer;
+  border: 1px solid var(--bd);
+  background: var(--panel);
+  color: var(--ink2);
+  transition: border-color var(--t-fast), background var(--t-fast), color var(--t-fast);
+}
+
+.chip:hover { border-color: var(--acc); }
+
+.on {
+  border-color: var(--acc);
+  background: var(--acc);
+  color: var(--onacc);
+}

@@ -1,20 +1,14 @@
 .card {
-  background: var(--color-surface-container-lowest);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--color-outline-variant);
-  padding: var(--space-6);
-  transition: box-shadow var(--transition-normal);
+  background: var(--panel);
+  border: 1px solid var(--bd);
+  border-radius: var(--r-card);
+  padding: 20px 22px;
 }
 
-.card.hoverable:hover {
-  box-shadow: var(--shadow-md);
-}
+.hoverable { transition: border-color var(--t-fast); }
+.hoverable:hover { border-color: var(--bdStrong); }
 
-.card.compact {
-  padding: var(--space-4);
-}
+.compact { padding: 15px 18px; }
 
-.card.flush {
-  padding: 0;
-}
+/* Sem padding: para cartões que embrulham uma tabela sangrada. */
+.flush { padding: 0; overflow: hidden; }

@@ -1,156 +1,115 @@
+/* ============================================================
+   20% — tokens
+   Vocabulário espelhado do artboard "20pct Redesign.dc.html".
+   Os nomes curtos (--bg, --panel, --acc…) são intencionais: são
+   exatamente os do design, então trecho copiado de lá já funciona.
+   ============================================================ */
+
 :root {
-  /* Primary — "Lawyer's Ink" */
-  --color-primary: #2a6391;
-  --color-primary-dim: #1a5784;
-  --color-primary-hover: #1e4f75;
-  --color-primary-container: #d4e8f7;
-  --color-on-primary: #ffffff;
-  --color-on-primary-container: #0a3d5c;
+  /* --- Superfícies -------------------------------------------------- */
+  --bg: #faf9f5;            /* fundo da aplicação — papel quente */
+  --panel: #ffffff;         /* cartões, seções, header */
+  --field: #faf9f5;         /* fundo de campo em repouso */
+  --thead: #f3efe7;         /* cabeçalho de tabela / hover de linha */
 
-  /* Secondary */
-  --color-secondary: #4a6fa5;
-  --color-secondary-container: #dce4f0;
-  --color-on-secondary-container: #1e3a5f;
+  /* --- Traços ------------------------------------------------------- */
+  --bd: #e7e0d4;            /* borda padrão */
+  --bdStrong: #cfc4b2;      /* borda em hover */
+  --hair: #eeeae1;          /* divisória interna (1px) */
+  --hair2: #e7e0d4;         /* divisória mais marcada / trilho */
 
-  /* Surface hierarchy — tonal layering */
-  --color-surface: #f7f8fc;
-  --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f1f3f9;
-  --color-surface-container: #ebedf5;
-  --color-surface-container-high: #e3e6f0;
-  --color-surface-container-highest: #dce0ec;
+  /* --- Tinta -------------------------------------------------------- */
+  --ink: #14110f;           /* texto primário — nunca preto puro */
+  --ink2: #4a423c;          /* texto secundário */
+  --muted: #6f655d;         /* apoio */
+  --muted2: #8d8378;        /* rótulos micro, metadados */
 
-  /* Text — never pure black */
-  --color-on-surface: #1a2332;
-  --color-on-surface-variant: #5a6577;
-  --color-on-surface-muted: #8b95a5;
+  /* --- Acento (oxblood) --------------------------------------------- */
+  --acc: #964f4c;
+  --accH: #7a3e3c;
+  --accBg: #f4eae8;
+  --onacc: #ffffff;
 
-  /* Outline */
-  --color-outline: #7a8599;
-  --color-outline-variant: rgba(42, 99, 145, 0.15);
+  /* --- Latão (detalhe de marca) ------------------------------------- */
+  --latao: #a98b58;
 
-  /* Status */
-  --color-status-ativo-bg: #dcfce7;
-  --color-status-ativo-fg: #15803d;
-  --color-status-encerrado-bg: #fee2e2;
-  --color-status-encerrado-fg: #b91c1c;
-  --color-status-quitado-bg: #dbeafe;
-  --color-status-quitado-fg: #1d4ed8;
-  --color-status-pendente-bg: #fef3c7;
-  --color-status-pendente-fg: #d97706;
+  /* --- Semânticos --------------------------------------------------- */
+  --grn: #4a6b4f;
+  --grnBg: #eaefe8;
+  --grnBd: #cfdcd0;
+  --amb: #8a6a30;
+  --ambBg: #f6eedd;
+  --red: #8c3a34;
+  --redBg: #f7e9e7;         /* adição: o artboard usa --red só em texto */
+  --redBd: #e8cfcb;
 
-  /* Semantic */
-  --color-success: #16a34a;
-  --color-warning: #d97706;
-  --color-danger: #ef4444;
-  --color-danger-hover: #dc2626;
+  /* --- Sidebar (escura nos dois temas) ------------------------------ */
+  --side-bg: #14110f;
+  --side-bgTop: #1b1714;
+  --side-edge: #0d0b0a;
+  --side-bd: #2a2420;
+  --side-fg: #ece5da;
+  --side-fgDim: #cfc4b6;
+  --side-muted: #9a8e80;
+  --side-label: #857a6d;
+  --side-count: #8b8074;
+  --side-activeBg: #241f1a;
+  --side-activeFg: #fbf7f0;
+  --side-hoverBg: #241f1b;
+  --side-hoverFg: #f7f2ea;
+  --side-avatarBg: #2f2823;
+  --side-avatarFg: #ddd0be;
 
-  /* Shadows — ambient */
-  --shadow-xs: 0 1px 2px rgba(26, 35, 50, 0.04);
-  --shadow-sm: 0 1px 3px rgba(26, 35, 50, 0.06), 0 1px 2px rgba(26, 35, 50, 0.04);
-  --shadow-md: 0 4px 12px rgba(26, 35, 50, 0.08), 0 2px 4px rgba(26, 35, 50, 0.04);
-  --shadow-lg: 0 12px 32px rgba(26, 35, 50, 0.12), 0 4px 8px rgba(26, 35, 50, 0.06);
-  --shadow-xl: 0 16px 48px rgba(26, 35, 50, 0.16), 0 8px 16px rgba(26, 35, 50, 0.06);
+  /* --- Raios -------------------------------------------------------- */
+  --r-chip: 4px;
+  --r-ctl: 5px;
+  --r-sm: 6px;
+  --r-card: 7px;
+  --r-pill: 99px;
 
-  /* Glass */
-  --glass-bg: rgba(255, 255, 255, 0.72);
-  --glass-bg-nav: rgba(241, 243, 249, 0.70);
-  --glass-blur: blur(20px);
-  --glass-border: 1px solid rgba(255, 255, 255, 0.3);
+  /* --- Alturas de controle ------------------------------------------ */
+  --h-xs: 29px;
+  --h-sm: 31px;
+  --h-md: 34px;
+  --h-lg: 36px;
 
-  /* Radius */
-  --radius-xs: 0.375rem;
-  --radius-sm: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.5rem;
-  --radius-full: 999px;
+  /* --- Layout ------------------------------------------------------- */
+  --sidebar-width: 236px;
+  --header-height: 60px;
+  --content-pad-x: 32px;
 
-  /* Spacing */
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.25rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-  --space-10: 2.5rem;
-  --space-12: 3rem;
-  --space-16: 4rem;
-
-  /* Gradients */
-  --gradient-primary: linear-gradient(145deg, #2a6391 0%, #1a5784 100%);
-  --gradient-surface: linear-gradient(180deg, var(--color-surface-container-low) 0%, var(--color-surface) 100%);
-
-  /* Transitions */
-  --transition-fast: 150ms ease;
-  --transition-normal: 250ms ease;
-  --transition-slow: 350ms ease;
-
-  /* Sidebar */
-  --sidebar-width: 260px;
+  /* --- Transições --------------------------------------------------- */
+  --t-fast: 120ms ease;
+  --t-normal: 200ms ease;
 }
 
-[data-theme="dark"] {
-  /* Primary */
-  --color-primary: #4a9fd4;
-  --color-primary-dim: #3a8fc4;
-  --color-primary-hover: #2a7fb4;
-  --color-primary-container: #1a3a50;
-  --color-on-primary: #0f1520;
-  --color-on-primary-container: #b8d9f0;
+[data-theme='dark'] {
+  --bg: #14110f;
+  --panel: #1d1917;
+  --field: #191513;
+  --thead: #231e1b;
 
-  /* Secondary */
-  --color-secondary: #6baed6;
-  --color-secondary-container: #1a2c3d;
-  --color-on-secondary-container: #a8cceb;
+  --bd: #332c27;
+  --bdStrong: #473d36;
+  --hair: #2b2521;
+  --hair2: #2b2521;
 
-  /* Surface hierarchy */
-  --color-surface: #0f1520;
-  --color-surface-container-lowest: #0a1018;
-  --color-surface-container-low: #141c2b;
-  --color-surface-container: #1a2438;
-  --color-surface-container-high: #1f2a40;
-  --color-surface-container-highest: #243048;
+  --ink: #f0ebe4;
+  --ink2: #cfc4b6;
+  --muted: #a89c8f;
+  --muted2: #8b8074;
 
-  /* Text */
-  --color-on-surface: #e2e8f4;
-  --color-on-surface-variant: #94a3b8;
-  --color-on-surface-muted: #64748b;
+  --acc: #c4756f;
+  --accH: #d99a94;
+  --accBg: #2e211f;
+  --onacc: #14110f;
 
-  /* Outline */
-  --color-outline: #334155;
-  --color-outline-variant: rgba(74, 159, 212, 0.12);
-
-  /* Status */
-  --color-status-ativo-bg: #14532d;
-  --color-status-ativo-fg: #86efac;
-  --color-status-encerrado-bg: #450a0a;
-  --color-status-encerrado-fg: #fca5a5;
-  --color-status-quitado-bg: #1e3a5f;
-  --color-status-quitado-fg: #93c5fd;
-  --color-status-pendente-bg: #451a03;
-  --color-status-pendente-fg: #fcd34d;
-
-  /* Semantic */
-  --color-success: #22c55e;
-  --color-warning: #f59e0b;
-  --color-danger: #f87171;
-  --color-danger-hover: #ef4444;
-
-  /* Shadows */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.6), 0 2px 4px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.7), 0 4px 8px rgba(0, 0, 0, 0.5);
-  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.8), 0 8px 16px rgba(0, 0, 0, 0.5);
-
-  /* Glass */
-  --glass-bg: rgba(20, 28, 43, 0.88);
-  --glass-bg-nav: rgba(15, 21, 32, 0.92);
-  --glass-border: 1px solid rgba(255, 255, 255, 0.06);
-
-  /* Gradients */
-  --gradient-primary: linear-gradient(145deg, #4a9fd4 0%, #2a7fb4 100%);
-  --gradient-surface: linear-gradient(180deg, var(--color-surface-container-low) 0%, var(--color-surface) 100%);
+  --grn: #7fae86;
+  --grnBg: #1c2a1e;
+  --grnBd: #2f4433;
+  --amb: #c4a473;
+  --ambBg: #2c2417;
+  --red: #d97b72;
+  --redBg: #2e1c1a;
+  --redBd: #4a2c28;
 }

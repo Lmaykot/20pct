@@ -1,111 +1,110 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { KpiCard } from '../../design-system/components'
 import { api } from '../../api/client'
-import { Card } from '../../design-system/components'
-import type { InadimplenteRow } from '../../types'
-import { TIPO_LABELS } from '../../types'
+import { usePrivacy } from '../../contexts/PrivacyContext'
+import type { Inadimplencia } from '../../types'
 import styles from './Inadimplentes.module.css'
 
 export function Inadimplentes() {
-  const navigate = useNavigate()
-  const [rows, setRows] = useState<InadimplenteRow[]>([])
+  const [dados, setDados] = useState<Inadimplencia | null>(null)
   const [loading, setLoading] = useState(true)
+  const [erro, setErro] = useState(false)
+  const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const { mask } = usePrivacy()
+
+  const busca = (searchParams.get('q') ?? '').trim().toLowerCase()
 
   useEffect(() => {
-    api.get<InadimplenteRow[]>('/relatorio/inadimplentes')
-      .then(setRows)
+    api.get<Inadimplencia>('/painel/inadimplencia')
+      .then(d => { setDados(d); setErro(false) })
+      .catch(() => setErro(true))
       .finally(() => setLoading(false))
   }, [])
 
-  const formatDate = (d: string) => {
-    if (!d) return '-'
-    const [y, m, day] = d.split('-')
-    return `${day}/${m}/${y}`
-  }
-
-  const handleGerir = (honorarioId: number) => {
-    navigate(`/pagamentos?honorario_id=${honorarioId}`)
-  }
+  const linhas = useMemo(() => {
+    if (!dados) return []
+    if (!busca) return dados.linhas
+    return dados.linhas.filter(l =>
+      l.cliente_nome.toLowerCase().includes(busca) ||
+      l.ctt_n.toLowerCase().includes(busca))
+  }, [dados, busca])
 
   return (
-    <div>
-      <h1 className={styles.pageTitle}>Inadimplentes</h1>
+    <>
+      <div className={styles.aging}>
+        {dados?.aging.map(f => (
+          <KpiCard
+            key={f.faixa}
+            label={f.faixa}
+            value={mask(f.valor)}
+            hint={f.qtd}
+            accent={f.cor}
+          />
+        ))}
+      </div>
 
-      {/* Desktop: tabela */}
-      <Card className={styles.card}>
-        {loading ? (
-          <div className={styles.empty}>Carregando...</div>
-        ) : rows.length === 0 ? (
-          <div className={styles.empty}>Nenhuma parcela em atraso encontrada.</div>
-        ) : (
+      <section className={styles.card}>
+        <div className={styles.tableWrap}>
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>CTT-N</th>
                 <th>Cliente</th>
-                <th>Tipo de Honorário</th>
-                <th>Hipótese</th>
-                <th>Vencimento</th>
-                <th>Nota Fiscal</th>
-                <th></th>
+                <th>Contrato</th>
+                <th className={styles.right}>Em atraso</th>
+                <th>Atraso</th>
+                <th>Última tratativa</th>
+                <th className={styles.right}>Próximo passo</th>
               </tr>
             </thead>
             <tbody>
-              {rows.map(r => (
-                <tr key={r.parcela_id}>
-                  <td className={styles.cttN}>{r.ctt_n}</td>
-                  <td>{r.cliente_nome}</td>
-                  <td>{TIPO_LABELS[r.tipo] || r.tipo}</td>
-                  <td className={styles.hipotese}>{r.hipotese || '-'}</td>
-                  <td className={styles.vencimento}>{formatDate(r.vencimento)}</td>
-                  <td>{r.nota_fiscal || '—'}</td>
-                  <td>
-                    <span
-                      className={styles.gerirLink}
-                      onClick={() => handleGerir(r.honorario_id)}
-                    >
-                      Gerir
+              {loading ? (
+                <tr><td colSpan={6} className={styles.empty}>Carregando inadimplência…</td></tr>
+              ) : erro ? (
+                <tr>
+                  <td colSpan={6} className={`${styles.empty} ${styles.falha}`}>
+                    Não foi possível carregar a inadimplência. Verifique se a API está no ar.
+                  </td>
+                </tr>
+              ) : linhas.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className={styles.empty}>
+                    {busca
+                      ? 'Nenhum inadimplente corresponde à busca.'
+                      : 'Nenhuma parcela vencida em aberto.'}
+                  </td>
+                </tr>
+              ) : linhas.map(l => (
+                <tr key={`${l.contrato_id}-${l.cliente_id}`}>
+                  <td className={styles.cliente}>{l.cliente_nome}</td>
+                  <td className={styles.contrato}>{l.ctt_n}</td>
+                  <td className={`${styles.mono} ${styles.right} ${styles.vermelho}`}>
+                    {mask(l.valor)}
+                  </td>
+                  <td className={styles.atraso}>
+                    {l.dias}
+                    <span className={styles.parcelas}>
+                      {' '}· {l.parcelas === 1 ? '1 parcela' : `${l.parcelas} parcelas`}
                     </span>
+                  </td>
+                  {/* Histórico de cobrança não existe no modelo de dados. */}
+                  <td className={styles.muted}>—</td>
+                  <td className={styles.right}>
+                    <button
+                      type="button"
+                      className={styles.acaoLink}
+                      onClick={() => navigate(`/contratos/${l.contrato_id}`)}
+                    >
+                      Abrir contrato
+                    </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-        )}
-      </Card>
-
-      {/* Mobile: cards */}
-      {loading ? (
-        <div className={`${styles.mobileList}`}>
-          <div className={styles.empty}>Carregando...</div>
         </div>
-      ) : rows.length === 0 ? (
-        <div className={styles.mobileList}>
-          <div className={styles.empty}>Nenhuma parcela em atraso.</div>
-        </div>
-      ) : (
-        <div className={styles.mobileList}>
-          {rows.map(r => (
-            <div key={r.parcela_id} className={styles.mobileCard}>
-              <div className={styles.mobileCardHeader}>
-                <span className={styles.mobileCttN}>{r.ctt_n}</span>
-                <span className={styles.mobileVencimento}>{formatDate(r.vencimento)}</span>
-              </div>
-              <div className={styles.mobileCliente}>{r.cliente_nome}</div>
-              <div className={styles.mobileTipo}>{TIPO_LABELS[r.tipo] || r.tipo}</div>
-              {r.hipotese && (
-                <div className={styles.mobileHipotese}>{r.hipotese}</div>
-              )}
-              <button
-                className={styles.mobileGerirBtn}
-                onClick={() => handleGerir(r.honorario_id)}
-              >
-                Gerir pagamento →
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+      </section>
+    </>
   )
 }

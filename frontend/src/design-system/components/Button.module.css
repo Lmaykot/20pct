@@ -2,85 +2,65 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
-  border-radius: var(--radius-md);
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: var(--text-sm);
-  padding: var(--space-3) var(--space-6);
-  transition: all var(--transition-fast);
+  gap: 7px;
+  border-radius: var(--r-ctl);
+  font-weight: var(--fw-medium);
   white-space: nowrap;
-  line-height: 1;
+  cursor: pointer;
+  transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast);
 }
 
 .button:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
+/* --- Tamanhos (alturas exatas do artboard) --- */
+.sm { height: var(--h-xs); padding: 0 11px; font-size: var(--fs-sm); }
+.md { height: var(--h-md); padding: 0 14px; font-size: var(--fs-sm2); }
+.lg { height: var(--h-lg); padding: 0 18px; font-size: var(--fs-base); }
+
+/* --- Variantes --- */
 .primary {
-  background: var(--gradient-primary);
-  color: var(--color-on-primary);
-  box-shadow: var(--shadow-sm);
+  border: 0;
+  background: var(--acc);
+  color: var(--onacc);
 }
-.primary:hover:not(:disabled) {
-  box-shadow: var(--shadow-md);
-  filter: brightness(1.08);
-}
-.primary:active:not(:disabled) {
-  filter: brightness(0.95);
-}
+.primary:hover:not(:disabled) { background: var(--accH); }
 
 .secondary {
-  background: var(--color-surface-container-lowest);
-  color: var(--color-primary);
-  box-shadow: var(--shadow-xs);
-  border: 1px solid var(--color-outline-variant);
-}
-.secondary:hover:not(:disabled) {
-  background: var(--color-surface-container-low);
-  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--bd);
+  background: var(--panel);
+  color: var(--ink2);
 }
 
 .danger {
-  background: var(--color-danger);
-  color: white;
-  box-shadow: var(--shadow-sm);
+  border: 0;
+  background: var(--red);
+  color: #fff;
 }
-.danger:hover:not(:disabled) {
-  background: var(--color-danger-hover);
-  box-shadow: var(--shadow-md);
-}
+.danger:hover:not(:disabled) { filter: brightness(0.92); }
 
 .ghost {
+  border: 1px solid transparent;
   background: transparent;
-  color: var(--color-primary);
-  padding: var(--space-2) var(--space-3);
+  color: var(--ink2);
 }
-.ghost:hover:not(:disabled) {
-  background: var(--color-primary-container);
-}
+.ghost:hover:not(:disabled) { background: var(--thead); color: var(--ink); }
 
 .link {
-  background: none;
-  color: var(--color-primary);
+  height: auto;
   padding: 0;
-  font-weight: 500;
-  text-decoration: none;
+  border: 0;
+  background: none;
+  color: var(--acc);
+  font-weight: var(--fw-regular);
 }
-.link:hover:not(:disabled) {
-  text-decoration: underline;
-}
+.link:hover:not(:disabled) { color: var(--accH); }
 
-.sm {
-  padding: var(--space-2) var(--space-4);
-  font-size: var(--text-xs);
-}
-.lg {
-  padding: var(--space-4) var(--space-8);
-  font-size: var(--text-base);
-}
+/* --- Hover das variantes de contorno --- */
+.secondary.tone_neutral:hover:not(:disabled) { border-color: var(--bdStrong); color: var(--ink); }
+.secondary.tone_accent:hover:not(:disabled) { border-color: var(--acc); color: var(--acc); }
+.secondary.tone_success:hover:not(:disabled) { border-color: var(--grn); color: var(--grn); }
 
-.fullWidth {
-  width: 100%;
-}
+.fullWidth { width: 100%; }

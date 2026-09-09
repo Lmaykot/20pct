@@ -4,6 +4,8 @@ import styles from './Button.module.css'
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'link'
   size?: 'sm' | 'md' | 'lg'
+  /** Cor que a borda e o texto assumem no hover das variantes de contorno. */
+  tone?: 'neutral' | 'accent' | 'success'
   fullWidth?: boolean
   children: ReactNode
 }
@@ -11,6 +13,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 export function Button({
   variant = 'primary',
   size = 'md',
+  tone = 'neutral',
   fullWidth = false,
   className = '',
   children,
@@ -19,7 +22,8 @@ export function Button({
   const classes = [
     styles.button,
     styles[variant],
-    size !== 'md' ? styles[size] : '',
+    styles[size],
+    styles[`tone_${tone}`],
     fullWidth ? styles.fullWidth : '',
     className,
   ].filter(Boolean).join(' ')

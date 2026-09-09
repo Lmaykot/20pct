@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import clientes, contratos, honorarios, parcelas, relatorio, export
+from app.routers import (
+    clientes, contratos, honorarios, parcelas, relatorio, export, painel, usuarios,
+)
 
 app = FastAPI(title="20% API", version="1.0.0")
 
@@ -16,8 +18,11 @@ app.include_router(clientes.router)
 app.include_router(contratos.router)
 app.include_router(honorarios.router)
 app.include_router(parcelas.router)
+app.include_router(parcelas.baixas_router)
 app.include_router(relatorio.router)
 app.include_router(export.router)
+app.include_router(painel.router)
+app.include_router(usuarios.router)
 
 
 @app.get("/api/health")

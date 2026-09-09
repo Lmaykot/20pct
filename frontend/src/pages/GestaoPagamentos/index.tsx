@@ -1,290 +1,166 @@
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { honorariosApi } from '../../api/honorarios'
-import { parcelasApi } from '../../api/parcelas'
-import { Card, Button, Input, SearchInput, SectionHeader } from '../../design-system/components'
-import type { HonorarioSearchResult } from '../../types'
-import { useDebounce } from '../../hooks/useDebounce'
-import { TIPO_LABELS, TIPO_ORDER } from '../../types'
+import { KpiCard, Section } from '../../design-system/components'
+import { baixasApi } from '../../api/parcelas'
+import { api } from '../../api/client'
+import { usePrivacy } from '../../contexts/PrivacyContext'
+import { usePainel } from '../../contexts/PainelContext'
+import type { Pagamentos, PainelParcela } from '../../types'
+import { ParcelasEditor } from './ParcelasEditor'
 import styles from './GestaoPagamentos.module.css'
 
-function groupByTipo(honorarios: HonorarioSearchResult[]) {
-  const map = new Map<string, HonorarioSearchResult[]>()
-  for (const h of honorarios) {
-    if (!map.has(h.tipo)) map.set(h.tipo, [])
-    map.get(h.tipo)!.push(h)
-  }
-  const knownTipos = (TIPO_ORDER as readonly string[]).filter(t => map.has(t))
-  const unknownTipos = [...map.keys()].filter(t => !(TIPO_ORDER as readonly string[]).includes(t))
-  return [...knownTipos, ...unknownTipos].map(tipo => ({ tipo, items: map.get(tipo)! }))
-}
-
-function handleRowKeyDown(e: React.KeyboardEvent, onActivate: () => void) {
-  if (e.key === 'Enter' || e.key === ' ') {
-    e.preventDefault()
-    onActivate()
-  }
-}
-
-interface ParcelaForm {
-  num: number
-  valor: string
-  vencimento: string
-  nota_fiscal: string
-  data_pagamento: string
-}
-
-interface TreeContract {
-  contrato_id: number
-  ctt_n: string
-  cliente_nome: string
-  honorarios: HonorarioSearchResult[]
+/* A cor do ponto ao lado do vencimento resume a situação da parcela
+   sem gastar uma coluna — é o padrão do design. */
+function corDaSituacao(p: PainelParcela): string {
+  if (p.situacao === 'Baixada') return 'var(--grn)'
+  if (p.situacao === 'Em atraso') return 'var(--red)'
+  if (p.situacao.startsWith('Vence em')) return 'var(--amb)'
+  return 'var(--bdStrong)'
 }
 
 export function GestaoPagamentos() {
-  const [searchParams] = useSearchParams()
-  const [search, setSearch] = useState('')
-  const debouncedSearch = useDebounce(search)
-  const [tree, setTree] = useState<TreeContract[]>([])
-  const [expanded, setExpanded] = useState<Set<number>>(new Set())
-  const [expandedTipos, setExpandedTipos] = useState<Set<string>>(new Set())
-  const [selectedHId, setSelectedHId] = useState<number | null>(null)
-  const [selectedInfo, setSelectedInfo] = useState<HonorarioSearchResult | null>(null)
-  const [parcelas, setParcelas] = useState<ParcelaForm[]>([])
-  const [saving, setSaving] = useState(false)
-  const [mobileShowDetail, setMobileShowDetail] = useState(false)
+  const [dados, setDados] = useState<Pagamentos | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [erro, setErro] = useState<string | null>(null)
+  const [emEdicao, setEmEdicao] = useState<number | null>(null)
+  const [processando, setProcessando] = useState<number | null>(null)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const { mask } = usePrivacy()
+  const { reload: recarregarPainel } = usePainel()
 
-  const buildTree = (results: HonorarioSearchResult[]): TreeContract[] => {
-    const map = new Map<number, TreeContract>()
-    for (const r of results) {
-      if (!map.has(r.contrato_id)) {
-        map.set(r.contrato_id, {
-          contrato_id: r.contrato_id, ctt_n: r.ctt_n,
-          cliente_nome: r.cliente_nome, honorarios: [],
-        })
-      }
-      map.get(r.contrato_id)!.honorarios.push(r)
-    }
-    return Array.from(map.values())
-  }
+  const busca = (searchParams.get('q') ?? '').trim().toLowerCase()
 
-  const loadTree = useCallback(async () => {
-    const results = await honorariosApi.search(debouncedSearch)
-    setTree(buildTree(results))
-  }, [debouncedSearch])
+  const carregar = useCallback(() => {
+    setLoading(true)
+    api.get<Pagamentos>('/painel/parcelas')
+      .then(d => { setDados(d); setErro(null) })
+      .catch(() => setErro('Não foi possível carregar as parcelas.'))
+      .finally(() => setLoading(false))
+  }, [])
 
-  useEffect(() => { loadTree() }, [loadTree])
+  useEffect(() => { carregar() }, [carregar])
 
+  /* Link vindo da ficha do contrato: /pagamentos?h=<honorario_id> */
   useEffect(() => {
-    const hid = searchParams.get('honorario_id')
-    if (hid) {
-      const id = parseInt(hid)
-      loadHonorario(id)
+    const h = searchParams.get('h')
+    if (h) {
+      setEmEdicao(Number(h))
+      const proximo = new URLSearchParams(searchParams)
+      proximo.delete('h')
+      setSearchParams(proximo, { replace: true })
     }
-  }, [searchParams])
+  }, [searchParams, setSearchParams])
 
-  const loadHonorario = async (hid: number) => {
-    setSelectedHId(hid)
-    const h = await honorariosApi.get(hid)
-    const results = await honorariosApi.search('')
-    const info = results.find(r => r.honorario_id === hid)
-    setSelectedInfo(info || { honorario_id: hid, tipo: h.tipo, hipotese: h.hipotese, valor: h.valor, contrato_id: h.contrato_id, ctt_n: '', cliente_nome: '' })
-    const parcelasData = await parcelasApi.get(hid)
-    setParcelas(parcelasData.map(p => ({
-      num: p.num_parcela, valor: p.valor, vencimento: p.vencimento,
-      nota_fiscal: p.nota_fiscal, data_pagamento: p.data_pagamento,
-    })))
-    setExpanded(prev => {
-      const next = new Set(prev)
-      if (info) next.add(info.contrato_id)
-      return next
-    })
-  }
+  const visiveis = useMemo(() => {
+    if (!dados) return []
+    if (!busca) return dados.parcelas
+    return dados.parcelas.filter(p =>
+      p.cliente_nome.toLowerCase().includes(busca) ||
+      p.ctt_n.toLowerCase().includes(busca) ||
+      p.hipotese.toLowerCase().includes(busca))
+  }, [dados, busca])
 
-  const toggleExpand = (id: number) => {
-    setExpanded(prev => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id); else next.add(id)
-      return next
-    })
-  }
-
-  const toggleTipoExpand = (key: string) => {
-    setExpandedTipos(prev => {
-      const next = new Set(prev)
-      if (next.has(key)) next.delete(key); else next.add(key)
-      return next
-    })
-  }
-
-  const treeGrouped = useMemo(
-    () => tree.map(c => ({ ...c, groups: groupByTipo(c.honorarios) })),
-    [tree],
-  )
-
-  const addParcela = () => {
-    setParcelas(prev => [...prev, { num: prev.length + 1, valor: '', vencimento: '', nota_fiscal: '', data_pagamento: '' }])
-  }
-
-  const removeParcela = (idx: number) => {
-    setParcelas(prev => prev.filter((_, i) => i !== idx).map((p, i) => ({ ...p, num: i + 1 })))
-  }
-
-  const updateParcela = (idx: number, field: keyof ParcelaForm, value: string) => {
-    setParcelas(prev => prev.map((p, i) => i === idx ? { ...p, [field]: value } : p))
-  }
-
-  const handleSave = async () => {
-    if (!selectedHId) return
-    setSaving(true)
+  const alternarBaixa = async (p: PainelParcela) => {
+    setProcessando(p.parcela_id)
     try {
-      await parcelasApi.save(selectedHId, parcelas)
+      if (p.situacao === 'Baixada') await baixasApi.estornar(p.parcela_id)
+      else await baixasApi.registrar(p.parcela_id)
+      carregar()
+      recarregarPainel()
+    } catch {
+      setErro('Não foi possível registrar a baixa.')
     } finally {
-      setSaving(false)
+      setProcessando(null)
     }
   }
 
   return (
-    <div>
-      <h1 className={styles.pageTitle}>Gestão de Pagamentos</h1>
-      <div className={styles.page}>
-        <div className={`${styles.treePanel} ${mobileShowDetail ? styles.mobileHidden : ''}`}>
-          <SearchInput
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Buscar por cliente ou contrato..."
-          />
-          <Card flush className={styles.treeScroll}>
-            {treeGrouped.map(c => {
-              const isContractOpen = expanded.has(c.contrato_id)
-              const toggleContract = () => toggleExpand(c.contrato_id)
-              return (
-                <div key={c.contrato_id} className={styles.contractNode}>
-                  <div
-                    className={styles.contractHeader}
-                    role="button"
-                    tabIndex={0}
-                    aria-expanded={isContractOpen}
-                    onClick={toggleContract}
-                    onKeyDown={e => handleRowKeyDown(e, toggleContract)}
-                  >
-                    <span className={`${styles.chevron} ${isContractOpen ? styles.chevronOpen : ''}`}>&#x25B6;</span>
-                    {c.ctt_n} &mdash; {c.cliente_nome}
-                  </div>
-                  {isContractOpen && c.groups.map(group => {
-                    const tipoKey = `${c.contrato_id}-${group.tipo}`
-                    const isTipoOpen = expandedTipos.has(tipoKey)
-                    const toggleTipo = () => toggleTipoExpand(tipoKey)
-                    return (
-                      <div key={group.tipo}>
-                        <div
-                          className={styles.tipoHeader}
-                          role="button"
-                          tabIndex={0}
-                          aria-expanded={isTipoOpen}
-                          onClick={toggleTipo}
-                          onKeyDown={e => handleRowKeyDown(e, toggleTipo)}
-                        >
-                          <span className={`${styles.chevron} ${isTipoOpen ? styles.chevronOpen : ''}`}>&#x25B6;</span>
-                          {TIPO_LABELS[group.tipo] || group.tipo}
-                          <span className={styles.tipoCount}>{group.items.length}</span>
-                        </div>
-                        {isTipoOpen && group.items.map(h => {
-                          const activate = () => { loadHonorario(h.honorario_id); setMobileShowDetail(true) }
-                          const isSelected = selectedHId === h.honorario_id
-                          return (
-                            <div
-                              key={h.honorario_id}
-                              className={`${styles.honorarioItem} ${isSelected ? styles.selected : ''}`}
-                              role="button"
-                              tabIndex={0}
-                              aria-pressed={isSelected}
-                              onClick={activate}
-                              onKeyDown={e => handleRowKeyDown(e, activate)}
-                            >
-                              <div className={styles.honorarioHipotese}>{h.hipotese || 'Sem hipótese'}</div>
-                              <div className={styles.honorarioValor}>R$ {h.valor}</div>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    )
-                  })}
-                </div>
-              )
-            })}
-            {tree.length === 0 && (
-              <div className={styles.emptyDetail}>Nenhum honorário encontrado</div>
-            )}
-          </Card>
-        </div>
+    <>
+      {erro && <div className={styles.erro}>{erro}</div>}
 
-        <Card className={`${styles.detailPanel} ${mobileShowDetail ? styles.mobileVisible : ''}`}>
-          {mobileShowDetail && (
-            <button className={styles.mobileBackBtn} onClick={() => { setMobileShowDetail(false); setSelectedHId(null); setSelectedInfo(null) }}>
-              ← Voltar
-            </button>
-          )}
-          {!selectedInfo ? (
-            <div className={styles.emptyDetail}>Selecione um honorário na lista</div>
-          ) : (
-            <>
-              <SectionHeader text="Informações" />
-              <div className={styles.infoGrid}>
-                <div>
-                  <div className={styles.infoLabel}>Cliente</div>
-                  <div className={styles.infoValue}>{selectedInfo.cliente_nome}</div>
-                </div>
-                <div>
-                  <div className={styles.infoLabel}>CTT-N</div>
-                  <div className={styles.infoValue}>{selectedInfo.ctt_n}</div>
-                </div>
-                <div>
-                  <div className={styles.infoLabel}>Tipo</div>
-                  <div className={styles.infoValue}>{TIPO_LABELS[selectedInfo.tipo] || selectedInfo.tipo}</div>
-                </div>
-                <div>
-                  <div className={styles.infoLabel}>Hipótese</div>
-                  <div className={styles.infoValue}>{selectedInfo.hipotese || '-'}</div>
-                </div>
-                <div>
-                  <div className={styles.infoLabel}>Valor</div>
-                  <div className={styles.infoValue}>R$ {selectedInfo.valor}</div>
-                </div>
-              </div>
-
-              <SectionHeader text="Parcelas" />
-              <div className={styles.parcelaHeader}>
-                <span className={styles.parcelaHeaderLabel}>#</span>
-                <span className={styles.parcelaHeaderLabel}>Valor</span>
-                <span className={styles.parcelaHeaderLabel}>Vencimento</span>
-                <span className={styles.parcelaHeaderLabel}>Nota Fiscal</span>
-                <span className={styles.parcelaHeaderLabel}>Pagamento</span>
-                <span style={{ width: 32 }} />
-              </div>
-              <div className={styles.parcelasTable}>
-                {parcelas.map((p, idx) => (
-                  <div key={idx} className={styles.parcelaRow}>
-                    <span className={styles.parcelaNum}>{p.num}</span>
-                    <Input value={p.valor} onChange={e => updateParcela(idx, 'valor', e.target.value)} placeholder="R$ 0,00" />
-                    <Input type="date" value={p.vencimento} onChange={e => updateParcela(idx, 'vencimento', e.target.value)} />
-                    <Input value={p.nota_fiscal} onChange={e => updateParcela(idx, 'nota_fiscal', e.target.value)} placeholder="NF" />
-                    <Input type="date" value={p.data_pagamento} onChange={e => updateParcela(idx, 'data_pagamento', e.target.value)} />
-                    <button className={styles.removeBtn} onClick={() => removeParcela(idx)}>&times;</button>
-                  </div>
-                ))}
-              </div>
-
-              <div className={styles.parcelaActions}>
-                <Button size="sm" variant="ghost" onClick={addParcela}>+ Adicionar Parcela</Button>
-                <Button onClick={handleSave} disabled={saving}>
-                  {saving ? 'Salvando...' : 'Salvar Parcelas'}
-                </Button>
-              </div>
-            </>
-          )}
-        </Card>
+      <div className={styles.kpis}>
+        {dados?.kpis.map(k => (
+          <KpiCard key={k.label} label={k.label} value={mask(k.valor)} hint={k.hint} />
+        ))}
       </div>
-    </div>
+
+      <Section
+        flush
+        title="Parcelas em aberto"
+        note="Baixa manual ou por conciliação bancária"
+      >
+        <div className={styles.tableWrap}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>Vencimento</th>
+                <th>Contrato</th>
+                <th>Cliente · hipótese</th>
+                <th>Parcela</th>
+                <th className={styles.right}>Valor</th>
+                <th className={styles.right}>Ação</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr><td colSpan={6} className={styles.empty}>Carregando parcelas…</td></tr>
+              ) : visiveis.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className={styles.empty}>
+                    {busca
+                      ? 'Nenhuma parcela corresponde à busca.'
+                      : 'Nenhuma parcela em aberto.'}
+                  </td>
+                </tr>
+              ) : visiveis.map(p => {
+                const baixada = p.situacao === 'Baixada'
+                return (
+                  <tr key={p.parcela_id}>
+                    <td>
+                      <div className={styles.venc}>
+                        <span className={styles.dot}
+                          style={{ background: corDaSituacao(p) }}
+                          title={p.situacao} />
+                        <span className={styles.mono}>{p.vencimento}</span>
+                      </div>
+                    </td>
+                    <td className={styles.contrato}>{p.ctt_n}</td>
+                    <td className={styles.clienteCelula}>
+                      <button type="button" className={styles.hipoteseBtn}
+                        onClick={() => setEmEdicao(p.honorario_id)}
+                        title="Abrir o parcelamento desta hipótese">
+                        {p.cliente_nome}
+                        <span className={styles.hipotese}> · {p.hipotese}</span>
+                      </button>
+                    </td>
+                    <td className={styles.parcelaNum}>{p.parcela}</td>
+                    <td className={`${styles.mono} ${styles.right}`}>{mask(p.valor)}</td>
+                    <td className={styles.right}>
+                      <button
+                        type="button"
+                        className={`${styles.baixaBtn} ${baixada ? styles.baixada : ''}`}
+                        disabled={processando === p.parcela_id}
+                        onClick={() => alternarBaixa(p)}
+                        title={baixada ? 'Clique para estornar a baixa' : undefined}
+                      >
+                        {processando === p.parcela_id
+                          ? '…'
+                          : baixada ? 'Baixada' : 'Registrar baixa'}
+                      </button>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
+      <ParcelasEditor
+        honorarioId={emEdicao}
+        onClose={() => setEmEdicao(null)}
+        onSaved={() => { carregar(); recarregarPainel() }}
+      />
+    </>
   )
 }

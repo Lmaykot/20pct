@@ -1,118 +1,56 @@
+/* ============================================================
+   20% — tipografia
+   Instrument Sans para a interface, JetBrains Mono para tudo
+   que é número, identificador ou data. Essa divisão é do design:
+   valores e CTT-N sempre em mono, texto sempre em sans.
+   ============================================================ */
+
 :root {
-  --font-heading: 'Manrope', system-ui, sans-serif;
-  --font-body: 'Inter', system-ui, sans-serif;
+  --font-ui: 'Instrument Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', 'Consolas', monospace;
 
-  --text-xs: 0.75rem;
-  --text-sm: 0.875rem;
-  --text-base: 1rem;
-  --text-lg: 1.125rem;
-  --text-xl: 1.25rem;
-  --text-2xl: 1.5rem;
-  --text-3xl: 2rem;
-  --text-4xl: 2.5rem;
+  /* Escala tirada do artboard — os meios-pontos são propositais,
+     é o que dá a densidade "documento" das tabelas. */
+  --fs-micro: 10px;      /* rótulo de coluna */
+  --fs-micro2: 10.5px;   /* rótulo de KPI */
+  --fs-xs: 11px;
+  --fs-xs2: 11.5px;
+  --fs-sm: 12px;
+  --fs-sm2: 12.5px;
+  --fs-base: 13px;
+  --fs-base2: 13.5px;
+  --fs-md: 14px;
+  --fs-md2: 15px;
+  --fs-lg: 15.5px;
+  --fs-xl: 16px;
+  --fs-2xl: 20px;        /* título da tela */
+  --fs-3xl: 26px;        /* nome do cliente na ficha */
 
-  --leading-tight: 1.2;
-  --leading-normal: 1.5;
-  --leading-relaxed: 1.625;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
 
-  --weight-regular: 400;
-  --weight-medium: 500;
-  --weight-semibold: 600;
-  --weight-bold: 700;
-  --weight-extrabold: 800;
+  --ls-tight: -0.4px;
+  --ls-title: -0.2px;
+  --ls-micro: 0.12em;    /* rótulo de coluna */
+  --ls-micro2: 0.13em;   /* rótulo de KPI */
+  --ls-side: 0.16em;     /* seção da sidebar */
+  --ls-brand: 0.22em;    /* subtítulo do logo */
 }
 
-/* Display */
-.text-display-lg {
-  font-family: var(--font-heading);
-  font-size: var(--text-4xl);
-  font-weight: var(--weight-extrabold);
-  line-height: var(--leading-tight);
-  letter-spacing: -0.02em;
-}
-
-.text-display-md {
-  font-family: var(--font-heading);
-  font-size: var(--text-3xl);
-  font-weight: var(--weight-bold);
-  line-height: var(--leading-tight);
-  letter-spacing: -0.015em;
-}
-
-/* Headline */
-.text-headline-lg {
-  font-family: var(--font-heading);
-  font-size: var(--text-2xl);
-  font-weight: var(--weight-bold);
-  line-height: var(--leading-tight);
-}
-
-.text-headline-md {
-  font-family: var(--font-heading);
-  font-size: var(--text-xl);
-  font-weight: var(--weight-semibold);
-  line-height: var(--leading-tight);
-}
-
-/* Title */
-.text-title-lg {
-  font-family: var(--font-heading);
-  font-size: var(--text-lg);
-  font-weight: var(--weight-semibold);
-  line-height: var(--leading-normal);
-}
-
-.text-title-md {
-  font-family: var(--font-body);
-  font-size: var(--text-base);
-  font-weight: var(--weight-semibold);
-  line-height: var(--leading-normal);
-}
-
-/* Body */
-.text-body-lg {
-  font-family: var(--font-body);
-  font-size: var(--text-lg);
-  font-weight: var(--weight-regular);
-  line-height: var(--leading-relaxed);
-}
-
-.text-body-md {
-  font-family: var(--font-body);
-  font-size: var(--text-base);
-  font-weight: var(--weight-regular);
-  line-height: var(--leading-normal);
-}
-
-.text-body-sm {
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-  font-weight: var(--weight-regular);
-  line-height: var(--leading-normal);
-}
-
-/* Label */
-.text-label-lg {
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-  font-weight: var(--weight-semibold);
-  line-height: var(--leading-normal);
-  letter-spacing: 0.01em;
-}
-
-.text-label-md {
-  font-family: var(--font-body);
-  font-size: var(--text-xs);
-  font-weight: var(--weight-medium);
-  line-height: var(--leading-normal);
-  letter-spacing: 0.02em;
-}
-
-.text-label-sm {
-  font-family: var(--font-body);
-  font-size: var(--text-xs);
-  font-weight: var(--weight-medium);
-  line-height: var(--leading-normal);
-  letter-spacing: 0.04em;
+/* Rótulo micro em versalete — o padrão mais repetido do design:
+   cabeçalho de coluna, rótulo de KPI, rótulo de campo. */
+.u-microLabel {
+  font-size: var(--fs-micro2);
+  letter-spacing: var(--ls-micro2);
   text-transform: uppercase;
+  color: var(--muted2);
+  font-weight: var(--fw-regular);
+}
+
+/* Números, valores, IDs de contrato e datas. */
+.u-mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }

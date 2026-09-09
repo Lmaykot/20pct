@@ -1,0 +1,292 @@
+/* ========================= Exportação ========================= */
+
+.grupos {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+.grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.grupoNota {
+  font-size: var(--fs-sm2);
+  color: var(--muted);
+  margin: -8px 0 0;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.exportCard {
+  background: var(--panel);
+  border: 1px solid var(--bd);
+  border-radius: var(--r-card);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.exportTopo {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.exportNome {
+  font-size: var(--fs-md);
+  font-weight: var(--fw-semibold);
+}
+
+.exportExt {
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro2);
+  color: var(--muted2);
+}
+
+.exportDesc {
+  font-size: var(--fs-sm2);
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.5;
+  flex: 1;
+}
+
+.exportRodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 3px;
+}
+
+.exportMeta {
+  font-size: var(--fs-xs2);
+  color: var(--muted2);
+}
+
+.exportBtn {
+  height: 32px;
+  padding: 0 15px;
+  border: 0;
+  background: var(--acc);
+  color: var(--onacc);
+  border-radius: var(--r-ctl);
+  font-size: var(--fs-sm2);
+  font-weight: var(--fw-medium);
+  white-space: nowrap;
+  transition: background var(--t-fast);
+}
+
+.exportBtn:hover:not(:disabled) { background: var(--accH); }
+
+.exportBtn:disabled {
+  background: var(--hair2);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.erro {
+  background: var(--redBg);
+  border: 1px solid var(--redBd);
+  color: var(--red);
+  border-radius: var(--r-ctl);
+  padding: 10px 14px;
+  font-size: var(--fs-sm2);
+}
+
+/* ========================== Usuários ========================== */
+
+.usuarios {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.usuariosTopo {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.usuariosTitulo {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.usuariosResumo {
+  font-size: var(--fs-sm2);
+  color: var(--muted);
+  margin: 5px 0 0;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--bd);
+  border-radius: var(--r-card);
+  overflow: hidden;
+}
+
+.tableWrap { overflow-x: auto; }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px;
+}
+
+.table thead tr { background: var(--thead); }
+
+.table th {
+  text-align: left;
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro);
+  text-transform: uppercase;
+  color: var(--muted2);
+  font-weight: var(--fw-medium);
+  padding: 10px 12px;
+  white-space: nowrap;
+}
+
+.table th:first-child { padding-left: 18px; }
+.table th:last-child { padding-right: 18px; }
+
+.table tbody tr {
+  border-top: 1px solid var(--hair);
+  transition: background var(--t-fast);
+}
+
+.table tbody tr:hover { background: var(--thead); }
+
+.table td { padding: 12px; }
+.table td:first-child { padding-left: 18px; }
+.table td:last-child { padding-right: 18px; }
+
+.right { text-align: right; }
+
+.usuarioCelula {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.usuarioNome {
+  display: block;
+  font-size: var(--fs-base2);
+  font-weight: var(--fw-medium);
+}
+
+.usuarioEmail {
+  display: block;
+  font-size: var(--fs-xs2);
+  color: var(--muted2);
+}
+
+.perfil,
+.perfilSocio {
+  display: inline-block;
+  font-size: var(--fs-xs);
+  padding: 3px 9px;
+  border-radius: var(--r-chip);
+  white-space: nowrap;
+}
+
+.perfil { background: var(--thead); color: var(--ink2); }
+.perfilSocio { background: var(--accBg); color: var(--acc); }
+
+.escopo {
+  font-size: var(--fs-sm2);
+  color: var(--ink2);
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--fs-sm);
+  color: var(--muted);
+}
+
+.acaoLink {
+  font-size: var(--fs-sm2);
+  color: var(--acc);
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+.acaoLink:hover { color: var(--accH); }
+
+.empty {
+  padding: 32px 18px;
+  text-align: center;
+  color: var(--muted);
+  font-size: var(--fs-base);
+}
+
+/* --- Cartões de perfil --- */
+
+.perfisCard {
+  background: var(--panel);
+  border: 1px solid var(--bd);
+  border-radius: var(--r-card);
+  padding: 18px 20px;
+}
+
+.perfisTitulo {
+  font-size: var(--fs-md);
+  font-weight: var(--fw-semibold);
+  margin: 0 0 3px;
+}
+
+.perfisNota {
+  font-size: var(--fs-sm2);
+  color: var(--muted);
+  margin: 0 0 14px;
+}
+
+.perfisGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 13px;
+}
+
+.perfilCard {
+  border: 1px solid var(--bd);
+  border-radius: var(--r-sm);
+  padding: 14px 15px;
+  border-left: 3px solid var(--latao);
+}
+
+.perfilNome {
+  font-size: var(--fs-base);
+  font-weight: var(--fw-semibold);
+}
+
+.perfilDesc {
+  font-size: var(--fs-sm);
+  color: var(--muted);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+/* --- Formulário do modal --- */
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px 16px;
+}
+
+.span2 { grid-column: 1 / -1; }

@@ -17,5 +17,7 @@
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  "//": "Os *.sync-conflict-* são cópias que o Syncthing deixa no diretório; não são código do projeto e não devem ser checados.",
+  "exclude": ["src/**/*sync-conflict*"]
 }

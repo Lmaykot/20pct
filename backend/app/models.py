@@ -154,3 +154,118 @@ class InadimplenteRow(BaseModel):
     ctt_n: str
     cliente_id: int
     cliente_nome: str
+
+
+# -- Usuarios --
+
+class UsuarioCreate(BaseModel):
+    nome: str
+    email: str = ''
+    perfil: str = 'Paralegal'
+    escopo: str = ''
+    status: str = 'Ativo'
+
+
+class UsuarioResponse(UsuarioCreate):
+    id: int
+    ultimo_acesso: str = ''
+    created_at: str | None = None
+
+
+class PerfilInfo(BaseModel):
+    nome: str
+    descricao: str
+
+
+# -- Painel --
+
+class PainelKpi(BaseModel):
+    label: str
+    valor: str
+    hint: str
+
+
+class PainelParcela(BaseModel):
+    honorario_id: int
+    parcela_id: int
+    vencimento: str
+    vencimento_iso: str
+    contrato_id: int
+    ctt_n: str
+    cliente_nome: str
+    hipotese: str
+    tipo: str
+    parcela: str
+    valor: str
+    dias_atraso: int
+    situacao: str
+
+
+class PainelPendencia(BaseModel):
+    titulo: str
+    detalhe: str
+    tom: str
+
+
+class PainelContagens(BaseModel):
+    contratos: int
+    contratos_ativos: int
+    clientes: int
+    parcelas_abertas: int
+    inadimplentes: int
+
+
+class PainelResponse(BaseModel):
+    kpis: list[PainelKpi]
+    agenda: list[PainelParcela]
+    pendencias: list[PainelPendencia]
+    contagens: PainelContagens
+    competencia: str
+
+
+class ContratoResumo(BaseModel):
+    id: int
+    ctt_n: str
+    cliente_nome: str
+    tipo: str
+    advogado: str
+    status: str
+    total_honorarios: str
+    recebido: str
+    pct_recebido: float
+
+
+class AgingFaixa(BaseModel):
+    faixa: str
+    valor: str
+    qtd: str
+    cor: str
+
+
+class InadimplenteAgrupado(BaseModel):
+    cliente_id: int
+    cliente_nome: str
+    contrato_id: int
+    ctt_n: str
+    valor: str
+    dias: str
+    parcelas: int
+
+
+class InadimplenciaResponse(BaseModel):
+    aging: list[AgingFaixa]
+    linhas: list[InadimplenteAgrupado]
+
+
+class PagamentosResponse(BaseModel):
+    kpis: list[PainelKpi]
+    parcelas: list[PainelParcela]
+
+
+class PosicaoCliente(BaseModel):
+    contratos_ativos: int
+    contratos_total: int
+    contratado: str
+    recebido: str
+    aberto: str
+    atrasos: str

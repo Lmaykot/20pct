@@ -86,6 +86,17 @@ class Database:
                 data_pagamento TEXT DEFAULT '',
                 FOREIGN KEY (honorario_id) REFERENCES honorarios(id)
             );
+
+            CREATE TABLE IF NOT EXISTS usuarios (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nome TEXT NOT NULL,
+                email TEXT DEFAULT '',
+                perfil TEXT DEFAULT 'Paralegal',
+                escopo TEXT DEFAULT '',
+                status TEXT DEFAULT 'Ativo',
+                ultimo_acesso TEXT DEFAULT '',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
         ''')
         self.conn.commit()
 
@@ -104,6 +115,7 @@ class Database:
             "ALTER TABLE contratos ADD COLUMN arquivo_path TEXT DEFAULT ''",
             "CREATE TABLE IF NOT EXISTS contrato_advogados (id INTEGER PRIMARY KEY AUTOINCREMENT, contrato_id INTEGER NOT NULL, nome TEXT NOT NULL, ordem INTEGER DEFAULT 0, FOREIGN KEY (contrato_id) REFERENCES contratos(id))",
             "INSERT INTO contrato_advogados (contrato_id, nome, ordem) SELECT id, advogado, 0 FROM contratos WHERE advogado != '' AND id NOT IN (SELECT DISTINCT contrato_id FROM contrato_advogados)",
+            "CREATE TABLE IF NOT EXISTS usuarios (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT NOT NULL, email TEXT DEFAULT '', perfil TEXT DEFAULT 'Paralegal', escopo TEXT DEFAULT '', status TEXT DEFAULT 'Ativo', ultimo_acesso TEXT DEFAULT '', created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)",
         ]
         for sql in migrations:
             try:
@@ -343,6 +355,21 @@ class Database:
             )
         self.conn.commit()
 
+    def set_parcela_pagamento(self, parcela_id, data_pagamento):
+        """Baixa (ou estorna, com string vazia) uma parcela isolada.
+
+        Existe separado de save_parcelas porque aquele apaga e reinsere
+        o conjunto inteiro — pesado demais para marcar uma quitação.
+        """
+        self.conn.execute(
+            'UPDATE parcelas SET data_pagamento = ? WHERE id = ?',
+            (data_pagamento, parcela_id))
+        self.conn.commit()
+
+    def get_parcela(self, parcela_id):
+        return self.conn.execute(
+            'SELECT * FROM parcelas WHERE id = ?', (parcela_id,)).fetchone()
+
     def get_parcelas(self, honorario_id):
         return self.conn.execute(
             'SELECT * FROM parcelas WHERE honorario_id=? ORDER BY num_parcela', (honorario_id,)
@@ -362,6 +389,78 @@ class Database:
               AND (p.data_pagamento IS NULL OR p.data_pagamento = '')
             ORDER BY p.vencimento ASC, c.ctt_n
         ''').fetchall()
+
+    # -- Usuarios --
+
+    def get_all_usuarios(self):
+        return self.conn.execute(
+            "SELECT * FROM usuarios ORDER BY CASE perfil "
+            "WHEN 'Sócio' THEN 0 WHEN 'Advogado' THEN 1 "
+            "WHEN 'Financeiro' THEN 2 ELSE 3 END, nome"
+        ).fetchall()
+
+    def get_usuario(self, uid):
+        return self.conn.execute(
+            "SELECT * FROM usuarios WHERE id = ?", (uid,)).fetchone()
+
+    def insert_usuario(self, nome, email, perfil, escopo, status):
+        cur = self.conn.execute(
+            "INSERT INTO usuarios (nome, email, perfil, escopo, status) "
+            "VALUES (?, ?, ?, ?, ?)",
+            (nome, email, perfil, escopo, status))
+        self.conn.commit()
+        return cur.lastrowid
+
+    def update_usuario(self, uid, nome, email, perfil, escopo, status):
+        self.conn.execute(
+            "UPDATE usuarios SET nome = ?, email = ?, perfil = ?, escopo = ?, "
+            "status = ? WHERE id = ?",
+            (nome, email, perfil, escopo, status, uid))
+        self.conn.commit()
+
+    def delete_usuario(self, uid):
+        self.conn.execute("DELETE FROM usuarios WHERE id = ?", (uid,))
+        self.conn.commit()
+
+    # -- Agregados (painel, inadimplência, resumo de contratos) --
+
+    def get_parcelas_detalhadas(self):
+        """Toda parcela com o contrato, o cliente e a hipótese que a originou."""
+        return self.conn.execute('''
+            SELECT p.id AS parcela_id, p.num_parcela, p.valor, p.vencimento,
+                   p.data_pagamento, p.nota_fiscal,
+                   h.id AS honorario_id, h.tipo, h.hipotese,
+                   c.id AS contrato_id, c.ctt_n, c.status AS contrato_status,
+                   cl.id AS cliente_id, cl.nome AS cliente_nome
+            FROM parcelas p
+            JOIN honorarios h ON p.honorario_id = h.id
+            JOIN contratos c ON h.contrato_id = c.id
+            JOIN clientes cl ON c.cliente_id = cl.id
+            ORDER BY p.vencimento
+        ''').fetchall()
+
+    def get_honorarios_detalhados(self):
+        """Honorários com contrato e cliente, e quantas parcelas cada um tem."""
+        return self.conn.execute('''
+            SELECT h.id AS honorario_id, h.tipo, h.hipotese, h.valor,
+                   c.id AS contrato_id, c.ctt_n, c.status AS contrato_status,
+                   cl.id AS cliente_id, cl.nome AS cliente_nome,
+                   (SELECT COUNT(*) FROM parcelas p WHERE p.honorario_id = h.id)
+                       AS total_parcelas
+            FROM honorarios h
+            JOIN contratos c ON h.contrato_id = c.id
+            JOIN clientes cl ON c.cliente_id = cl.id
+            ORDER BY c.ctt_n, h.ordem
+        ''').fetchall()
+
+    def count_contratos_por_status(self):
+        return self.conn.execute(
+            "SELECT status, COUNT(*) AS n FROM contratos GROUP BY status"
+        ).fetchall()
+
+    def count_clientes(self):
+        row = self.conn.execute("SELECT COUNT(*) AS n FROM clientes").fetchone()
+        return row['n'] if row else 0
 
     def close(self):
         self.conn.close()

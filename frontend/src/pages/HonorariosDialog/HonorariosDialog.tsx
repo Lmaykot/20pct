@@ -88,12 +88,13 @@ export function HonorariosDialog({ open, contratoId, onClose }: HonorariosDialog
     <Modal
       open={open}
       onClose={onClose}
-      title="Cadastro de Honorários"
+      wide
+      title="Cadastro de honorários"
       footer={
         <>
           <Button variant="secondary" onClick={onClose}>Cancelar</Button>
           <Button onClick={handleSave} disabled={saving}>
-            {saving ? 'Salvando...' : 'Salvar Honorários'}
+            {saving ? 'Salvando…' : 'Salvar honorários'}
           </Button>
         </>
       }
